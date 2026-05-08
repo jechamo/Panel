@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { createFlow, getFlow, listFlows, updateFlow, type ApiError } from '../../lib/api';
+import { createFlow, getFlow, listFlows, runFlow, updateFlow } from '../../lib/api';
 import type { FlowSummary } from '../../lib/types';
 import { useFlowStore } from '../../stores/flow-store';
 
@@ -8,6 +8,7 @@ export function FlowPersistenceBar() {
   const { buildFlowPayload, currentFlowId, currentFlowName, loadFlow, setCurrentFlowMeta } = useFlowStore();
   const [flows, setFlows] = useState<FlowSummary[]>([]);
   const [isListOpen, setIsListOpen] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -65,6 +66,33 @@ export function FlowPersistenceBar() {
     }
   };
 
+  const handleRunAll = async () => {
+    setIsRunning(true);
+    setMessage(null);
+
+    try {
+      const payload = buildFlowPayload();
+      const persistedFlow = currentFlowId
+        ? await updateFlow({ id: currentFlowId, ...payload })
+        : await createFlow(payload);
+
+      const executedFlow = await runFlow(persistedFlow.id);
+      loadFlow(executedFlow);
+      setCurrentFlowMeta(executedFlow.id, executedFlow.name);
+      setMessage('Flujo ejecutado. Estados y outputs sincronizados desde backend.');
+
+      if (isListOpen) {
+        await refreshFlows();
+      }
+    }
+    catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No se pudo ejecutar el flujo.');
+    }
+    finally {
+      setIsRunning(false);
+    }
+  };
+
   return (
     <div className="rounded-[28px] border border-white/10 bg-black/20 p-3 backdrop-blur md:min-w-[360px]">
       <div className="flex flex-col gap-3">
@@ -90,6 +118,14 @@ export function FlowPersistenceBar() {
             type="button"
           >
             {isListOpen ? 'Cerrar lista' : 'Cargar'}
+          </button>
+          <button
+            className="rounded-full border border-tide/35 bg-tide/18 px-4 py-2 text-sm text-white transition hover:bg-tide/28 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isRunning}
+            onClick={() => void handleRunAll()}
+            type="button"
+          >
+            {isRunning ? 'Ejecutando flujo...' : 'Run All'}
           </button>
         </div>
 

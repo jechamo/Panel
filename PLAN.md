@@ -331,7 +331,7 @@ Cuando un nodo se ejecuta, su output queda disponible para el siguiente conectad
 
 - 2026-05-08
 
-## [ ] Fase 12 - Run global y Run de nodo
+## [x] Fase 12 - Run global y Run de nodo
 
 **Descripcion**
 
@@ -353,6 +353,10 @@ Endpoint POST /flows/{id}/run con topological sort de los nodos. Boton "Run All"
 - frontend/src/components/canvas/*
 - frontend/src/components/ui/*
 - frontend/src/stores/*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 13 - Multi-proveedor + Settings
 

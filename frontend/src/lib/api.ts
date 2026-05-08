@@ -104,6 +104,12 @@ export async function getFlow(flowId: string): Promise<FlowDocument> {
   return requestEnvelope<FlowDocument>(`/flows/${flowId}`);
 }
 
+export async function runFlow(flowId: string): Promise<FlowDocument> {
+  return requestEnvelope<FlowDocument>(`/flows/${flowId}/run`, {
+    method: 'POST',
+  });
+}
+
 export async function listFlows(): Promise<FlowSummary[]> {
   return requestEnvelope<FlowSummary[]>('/flows');
 }

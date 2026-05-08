@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.flow_storage import create_flow, delete_flow, get_flow, list_flows, update_flow
 from app.core.responses import error_response, success_response
+from app.executors.graph_runner import GraphRunError, run_flow_graph
 from app.models.flow import FlowCreateRequest, FlowUpdateRequest
 
 router = APIRouter(prefix='/flows', tags=['flows'])
@@ -26,6 +27,19 @@ def read_flow(flow_id: str):
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content=error_response('flow_not_found', f'Flow {flow_id} was not found.'),
+        )
+
+    return success_response(document.model_dump(mode='json'))
+
+
+@router.post('/{flow_id}/run')
+def run_flow_endpoint(flow_id: str):
+    try:
+        document = run_flow_graph(flow_id)
+    except GraphRunError as error:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=error_response('flow_run_error', str(error)),
         )
 
     return success_response(document.model_dump(mode='json'))
