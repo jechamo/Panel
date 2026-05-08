@@ -168,11 +168,7 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
             <p className="mt-1 text-sm text-mist/70">Respuesta estructurada validada contra los campos declarados.</p>
           </div>
 
-          {typeof node.output === 'string' ? (
-            <pre className="whitespace-pre-wrap rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm leading-6 text-mist/88">{node.output}</pre>
-          ) : (
-            <JsonViewer data={node.output} />
-          )}
+          <JsonViewer data={node.output} title="Salida del agente" />
         </section>
       ) : null}
 

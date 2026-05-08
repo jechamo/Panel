@@ -11,7 +11,7 @@ Esta es la Fase A. Crear la documentacion base del repo, la estructura de carpet
 - Existen AGENTS.md, .github/copilot-instructions.md, PLAN.md y README.md con el contenido base solicitado.
 - Existe el arbol de carpetas completo con .gitkeep donde corresponde.
 - Existen .gitignore, .editorconfig, LICENSE y .gitattributes.
-- El repo conserva git y tiene un commit `chore: bootstrap project structure and plan`.
+- El repo conserva git y tiene un commit `chore: bootstrap project structure and plan`.ok
 - No se implementa todavia logica funcional de fases posteriores.
 
 **Archivos que tocara**
@@ -387,7 +387,7 @@ Soporte OpenAI y Gemini. Panel de Settings en la UI para meter API keys (guardad
 
 - 2026-05-08
 
-## [ ] Fase 14 - Viewer de salida
+## [x] Fase 14 - Viewer de salida
 
 **Descripcion**
 
@@ -405,6 +405,10 @@ Componente que renderiza el JSON de salida con campos colapsables, copia al clip
 - frontend/src/components/ui/*
 - frontend/src/components/panels/*
 - frontend/src/App.tsx
+
+**Fecha completada**
+
+- 2026-05-09
 
 ## [ ] Fase 15 - Polish
 

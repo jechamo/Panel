@@ -27,6 +27,7 @@ La Fase 2 deja operativo el backend y el scaffold visual del frontend.
 12. Si un nodo tiene un predecesor conectado y usas `{{input.*}}`, el backend tomara el output cacheado del nodo anterior desde el flujo guardado; ejecuta primero el nodo predecesor al menos una vez.
 13. El boton `Run All` guarda el flujo actual, ejecuta los nodos en orden topologico y recarga en la UI los estados y outputs devueltos por backend.
 14. La Fase 13 anade un panel de Settings para cargar claves de Anthropic, OpenAI y Gemini; en esta version se guardan en `backend/.env` por simplicidad operativa local, y el selector del nodo Agente se alimenta desde `backend/config/models.yaml`.
+15. La salida JSON ya se renderiza con un viewer colapsable y boton de copia; no se usa `pre` como solucion final para outputs de nodos.
 
 ## Referencias
 

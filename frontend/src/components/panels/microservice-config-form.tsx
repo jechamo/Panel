@@ -186,7 +186,7 @@ export function MicroserviceConfigForm({ node, nodeId, onChange }: MicroserviceC
             <p className="mt-1 text-sm text-mist/70">Respuesta JSON del microservicio.</p>
           </div>
 
-          <JsonViewer data={node.output} />
+          <JsonViewer data={node.output} title="Salida del microservicio" />
         </section>
       ) : null}
     </div>
