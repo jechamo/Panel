@@ -1,4 +1,5 @@
 import { FlowCanvas } from './components/canvas/flow-canvas';
+import { NodeConfigPanel } from './components/panels/node-config-panel';
 import { ConnectionIndicator } from './components/ui/connection-indicator';
 
 export default function App() {
@@ -24,9 +25,13 @@ export default function App() {
 					</div>
 				</header>
 
-				<main className="flex-1 overflow-hidden rounded-[36px] border border-white/10 bg-panel/80 shadow-glow backdrop-blur">
-					<FlowCanvas />
-				</main>
+				<div className="flex flex-1 flex-col gap-4 lg:flex-row">
+					<main className="flex-1 overflow-hidden rounded-[36px] border border-white/10 bg-panel/80 shadow-glow backdrop-blur">
+						<FlowCanvas />
+					</main>
+
+					<NodeConfigPanel />
+				</div>
 			</div>
 		</div>
 	);

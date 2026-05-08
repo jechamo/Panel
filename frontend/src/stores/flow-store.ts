@@ -9,28 +9,63 @@ import {
 } from '@xyflow/react';
 import { create } from 'zustand';
 
-import type { WorkflowNode, WorkflowNodeData, NodeKind } from '../lib/types';
+import type {
+  AgentNodeConfig,
+  AgentNodeData,
+  MicroserviceNodeConfig,
+  MicroserviceNodeData,
+  NodeKind,
+  WorkflowNode,
+  WorkflowNodeData,
+} from '../lib/types';
 
 type FlowState = {
   edges: Edge[];
   nodes: WorkflowNode[];
+  selectedNodeId: string | null;
   addNode: (kind: NodeKind) => void;
+  selectNode: (nodeId: string | null) => void;
   onConnect: (connection: Connection) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onNodesChange: (changes: NodeChange<WorkflowNode>[]) => void;
+  updateNodeData: (nodeId: string, updater: (data: WorkflowNodeData) => WorkflowNodeData) => void;
 };
 
-const templates: Record<NodeKind, Omit<WorkflowNodeData, 'status'>> = {
-  agent: {
-    kind: 'agent',
-    title: 'Agente',
-    description: 'Prompt estructurado y salida reusable.',
-  },
-  microservice: {
-    kind: 'microservice',
-    title: 'Microservicio',
-    description: 'Endpoint HTTP con entrada y salida JSON.',
-  },
+const agentTemplate: Omit<AgentNodeData, 'status'> = {
+  kind: 'agent',
+  title: 'Agente',
+  description: 'Prompt estructurado y salida reusable.',
+  config: {
+    systemPrompt: '',
+    userPrompt: '',
+    attachments: [],
+    outputFields: [
+      {
+        id: crypto.randomUUID(),
+        name: '',
+        description: '',
+      },
+    ],
+    model: 'anthropic',
+  } satisfies AgentNodeConfig,
+};
+
+const microserviceTemplate: Omit<MicroserviceNodeData, 'status'> = {
+  kind: 'microservice',
+  title: 'Microservicio',
+  description: 'Endpoint HTTP con entrada y salida JSON.',
+  config: {
+    endpoint: '',
+    method: 'POST',
+    headers: [
+      {
+        id: crypto.randomUUID(),
+        key: '',
+        value: '',
+      },
+    ],
+    payload: '{\n  \n}',
+  } satisfies MicroserviceNodeConfig,
 };
 
 const positions: Record<NodeKind, { x: number; y: number }> = {
@@ -39,18 +74,30 @@ const positions: Record<NodeKind, { x: number; y: number }> = {
 };
 
 function makeNode(kind: NodeKind, index: number): WorkflowNode {
-  const base = templates[kind];
   const offset = index * 36;
+  const position = {
+    x: positions[kind].x + offset,
+    y: positions[kind].y + offset,
+  };
+
+  if (kind === 'agent') {
+    return {
+      id: crypto.randomUUID(),
+      type: 'workflow',
+      position,
+      data: {
+        ...agentTemplate,
+        status: 'idle',
+      },
+    };
+  }
 
   return {
     id: crypto.randomUUID(),
     type: 'workflow',
-    position: {
-      x: positions[kind].x + offset,
-      y: positions[kind].y + offset,
-    },
+    position,
     data: {
-      ...base,
+      ...microserviceTemplate,
       status: 'idle',
     },
   };
@@ -59,10 +106,17 @@ function makeNode(kind: NodeKind, index: number): WorkflowNode {
 export const useFlowStore = create<FlowState>((set) => ({
   nodes: [],
   edges: [],
+  selectedNodeId: null,
   addNode: (kind) =>
-    set((state) => ({
-      nodes: [...state.nodes, makeNode(kind, state.nodes.length)],
-    })),
+    set((state) => {
+      const nextNode = makeNode(kind, state.nodes.length);
+
+      return {
+        nodes: [...state.nodes, nextNode],
+        selectedNodeId: nextNode.id,
+      };
+    }),
+  selectNode: (nodeId) => set(() => ({ selectedNodeId: nodeId })),
   onConnect: (connection) =>
     set((state) => ({
       edges: addEdge(
@@ -79,7 +133,26 @@ export const useFlowStore = create<FlowState>((set) => ({
       edges: applyEdgeChanges(changes, state.edges),
     })),
   onNodesChange: (changes) =>
+    set((state) => {
+      const nextNodes = applyNodeChanges(changes, state.nodes);
+      const hasSelectedNode = state.selectedNodeId
+        ? nextNodes.some((node) => node.id === state.selectedNodeId)
+        : false;
+
+      return {
+        nodes: nextNodes,
+        selectedNodeId: hasSelectedNode ? state.selectedNodeId : null,
+      };
+    }),
+  updateNodeData: (nodeId, updater) =>
     set((state) => ({
-      nodes: applyNodeChanges(changes, state.nodes),
+      nodes: state.nodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              data: updater(node.data),
+            }
+          : node,
+      ),
     })),
 }));

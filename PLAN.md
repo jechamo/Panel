@@ -123,7 +123,7 @@ CORS configurado en backend. Cliente API en frontend (lib/api.ts). Indicador de 
 
 - 2026-05-08
 
-## [ ] Fase 4 - Paneles de configuracion
+## [x] Fase 4 - Paneles de configuracion
 
 **Descripcion**
 
@@ -143,6 +143,10 @@ Click en nodo -> abre panel lateral. Formulario completo para Agente y para Micr
 - frontend/src/components/canvas/*
 - frontend/src/stores/*
 - frontend/src/lib/types*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 5 - Persistencia de flujos
 
