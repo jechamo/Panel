@@ -3,6 +3,7 @@ import type { ChangeEvent, DragEvent } from 'react';
 import { runAgentNode, uploadAttachment } from '../../lib/api';
 import { JsonViewer } from '../ui/json-viewer';
 import { useFlowStore } from '../../stores/flow-store';
+import { useSettingsStore } from '../../stores/settings-store';
 import type { AgentNodeData, AttachmentReference } from '../../lib/types';
 
 type AgentConfigFormProps = {
@@ -15,6 +16,8 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
   const { config } = node;
   const currentFlowId = useFlowStore((state) => state.currentFlowId);
   const setNodeRuntimeState = useFlowStore((state) => state.setNodeRuntimeState);
+  const availableModels = useSettingsStore((state) => state.settings?.models ?? []);
+  const selectedModel = availableModels.find((model) => model.id === config.model);
 
   const updateConfig = (nextConfig: AgentNodeData['config']) => {
     onChange({
@@ -107,14 +110,27 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
 
       <section className="space-y-3">
         <div>
-          <label className="text-xs uppercase tracking-[0.24em] text-mist/45">Modelo Anthropic</label>
-          <input
+          <label className="text-xs uppercase tracking-[0.24em] text-mist/45">Modelo</label>
+          <select
             className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition focus:border-tide/60"
             onChange={(event) => updateConfig({ ...config, model: event.target.value })}
-            placeholder="ID exacto del modelo configurado"
-            type="text"
             value={config.model}
-          />
+          >
+            <option value="">Selecciona un modelo de backend/config/models.yaml</option>
+            {config.model && !selectedModel ? (
+              <option value={config.model}>{config.model}</option>
+            ) : null}
+            {availableModels.map((model) => (
+              <option key={`${model.provider}-${model.id}`} value={model.id}>
+                {model.label} ({model.provider})
+              </option>
+            ))}
+          </select>
+          <p className="mt-2 text-sm text-mist/62">
+            {selectedModel
+              ? `Proveedor detectado: ${selectedModel.provider}.`
+              : 'Si no hay opciones, configura modelos en Settings y backend/config/models.yaml.'}
+          </p>
         </div>
 
         <div>

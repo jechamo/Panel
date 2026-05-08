@@ -57,7 +57,7 @@ const agentTemplate: Omit<AgentNodeData, 'status'> = {
         description: '',
       },
     ],
-    model: 'anthropic',
+    model: '',
   } satisfies AgentNodeConfig,
 };
 

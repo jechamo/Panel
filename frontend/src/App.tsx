@@ -1,9 +1,20 @@
+import { useEffect, useState } from 'react';
+
 import { FlowCanvas } from './components/canvas/flow-canvas';
 import { NodeConfigPanel } from './components/panels/node-config-panel';
+import { SettingsPanel } from './components/panels/settings-panel';
 import { ConnectionIndicator } from './components/ui/connection-indicator';
 import { FlowPersistenceBar } from './components/ui/flow-persistence-bar';
+import { useSettingsStore } from './stores/settings-store';
 
 export default function App() {
+	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+	const loadSettings = useSettingsStore((state) => state.loadSettings);
+
+	useEffect(() => {
+		void loadSettings();
+	}, [loadSettings]);
+
 	return (
 		<div className="min-h-screen bg-ink bg-haze text-mist">
 			<div className="mx-auto flex min-h-screen max-w-[1600px] flex-col px-4 py-4 sm:px-6 lg:px-8">
@@ -21,6 +32,13 @@ export default function App() {
 					<div className="flex flex-col gap-3 md:items-end">
 						<ConnectionIndicator />
 						<FlowPersistenceBar />
+						<button
+							className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-mist/80 transition hover:border-white/20 hover:text-white"
+							onClick={() => setIsSettingsOpen(true)}
+							type="button"
+						>
+							Settings
+						</button>
 						<div className="rounded-3xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-mist/72">
 							Los flujos ahora se guardan como JSON versionado en backend/storage/flows/.
 						</div>
@@ -35,6 +53,7 @@ export default function App() {
 					<NodeConfigPanel />
 				</div>
 			</div>
+			<SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 		</div>
 	);
 }

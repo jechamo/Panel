@@ -5,6 +5,8 @@ import type {
   FlowPayload,
   FlowSummary,
   JsonValue,
+  SettingsSnapshot,
+  SettingsUpdatePayload,
   MicroserviceNodeConfig,
 } from './types';
 
@@ -118,6 +120,19 @@ export async function updateFlow(flow: FlowDocument): Promise<FlowDocument> {
   return requestEnvelope<FlowDocument>(`/flows/${flow.id}`, {
     method: 'PUT',
     body: JSON.stringify(flow),
+  });
+}
+
+export async function getSettingsSnapshot(): Promise<SettingsSnapshot> {
+  return requestEnvelope<SettingsSnapshot>('/settings');
+}
+
+export async function updateSettingsSnapshot(
+  payload: SettingsUpdatePayload,
+): Promise<SettingsSnapshot> {
+  return requestEnvelope<SettingsSnapshot>('/settings', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
   });
 }
 

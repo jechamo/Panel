@@ -1,2 +1,16 @@
 # Rellena este archivo con identificadores oficiales de modelos por proveedor.
 # No se hardcodean modelos en codigo.
+# Estructura soportada:
+# providers:
+#   anthropic:
+#     - id: claude-...
+#       label: Claude ...
+#   openai:
+#     - gpt-...
+#   gemini:
+#     - id: gemini-...
+#       label: Gemini ...
+providers:
+	anthropic: []
+	openai: []
+	gemini: []

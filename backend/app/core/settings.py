@@ -8,11 +8,14 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     app_env: str = "development"
     anthropic_api_key: str = ""
+    openai_api_key: str = ""
+    gemini_api_key: str = ""
     host: str = "127.0.0.1"
     port: int = 8000
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
     flows_storage_dir: str = "storage/flows"
     uploads_storage_dir: str = "storage/uploads"
+    models_config_path: str = "config/models.yaml"
 
     model_config = SettingsConfigDict(
         env_file=".env",

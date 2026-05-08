@@ -358,7 +358,7 @@ Endpoint POST /flows/{id}/run con topological sort de los nodos. Boton "Run All"
 
 - 2026-05-08
 
-## [ ] Fase 13 - Multi-proveedor + Settings
+## [x] Fase 13 - Multi-proveedor + Settings
 
 **Descripcion**
 
@@ -382,6 +382,10 @@ Soporte OpenAI y Gemini. Panel de Settings en la UI para meter API keys (guardad
 - frontend/src/components/panels/*
 - frontend/src/stores/*
 - README.md
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 14 - Viewer de salida
 

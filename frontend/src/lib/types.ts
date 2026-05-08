@@ -81,3 +81,24 @@ export type FlowSummary = {
   name: string;
   version: 1;
 };
+
+export type ProviderId = 'anthropic' | 'openai' | 'gemini';
+
+export type ModelOption = {
+  id: string;
+  label: string;
+  provider: ProviderId;
+};
+
+export type SettingsSnapshot = {
+  anthropicConfigured: boolean;
+  openaiConfigured: boolean;
+  geminiConfigured: boolean;
+  models: ModelOption[];
+};
+
+export type SettingsUpdatePayload = {
+  anthropicApiKey?: string;
+  openaiApiKey?: string;
+  geminiApiKey?: string;
+};

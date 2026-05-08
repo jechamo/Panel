@@ -2,7 +2,10 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 
-from app.llm.anthropic import build_structured_output_tool, get_anthropic_client
+from app.llm.anthropic import run_anthropic_structured_output
+from app.llm.catalog import get_model_provider
+from app.llm.gemini import run_gemini_structured_output
+from app.llm.openai import run_openai_structured_output
 from app.models.node import AgentNodeConfig, NodeExecutionContext, NodeRunResult, OutputFieldItem
 from app.templating.resolver import TemplateResolutionError, resolve_template_value
 
@@ -37,28 +40,23 @@ def run_agent_with_context(
         )
 
     try:
-        client = get_anthropic_client()
+        provider = get_model_provider(config.model)
     except ValueError as error:
         raise AgentExecutionError(str(error)) from error
 
     schema_model = build_output_schema_model(config.outputFields)
-    output_tool = build_structured_output_tool(schema_model.model_json_schema(by_alias=True))
+    input_schema = schema_model.model_json_schema(by_alias=True)
 
-    response = client.messages.create(
-        model=config.model,
-        max_tokens=1024,
-        system=resolved_system_prompt or None,
-        messages=[
-            {
-                'role': 'user',
-                'content': resolved_user_prompt,
-            }
-        ],
-        tool_choice={'type': 'tool', 'name': output_tool['name']},
-        tools=[output_tool],
-    )
-
-    tool_input = extract_tool_input(response.content, output_tool['name'])
+    try:
+        tool_input = _run_structured_output_request(
+            provider=provider,
+            model=config.model,
+            system_prompt=resolved_system_prompt,
+            user_prompt=resolved_user_prompt,
+            input_schema=input_schema,
+        )
+    except ValueError as error:
+        raise AgentExecutionError(str(error)) from error
 
     try:
         parsed_output = schema_model.model_validate(tool_input)
@@ -99,16 +97,6 @@ def build_output_schema_model(output_fields: list[OutputFieldItem]) -> type[Base
     )
 
 
-def extract_tool_input(content_blocks: list[Any], tool_name: str) -> dict[str, Any]:
-    for block in content_blocks:
-        if getattr(block, 'type', None) == 'tool_use' and getattr(block, 'name', None) == tool_name:
-            return getattr(block, 'input', {})
-
-    raise AgentExecutionError(
-        'Anthropic response did not include the structured output tool payload.',
-    )
-
-
 def _resolve_prompt(raw_prompt: str, context: NodeExecutionContext) -> str:
     resolved_prompt = resolve_template_value(
         raw_prompt,
@@ -120,3 +108,23 @@ def _resolve_prompt(raw_prompt: str, context: NodeExecutionContext) -> str:
         return resolved_prompt
 
     return str(resolved_prompt)
+
+
+def _run_structured_output_request(
+    *,
+    provider: str,
+    model: str,
+    system_prompt: str,
+    user_prompt: str,
+    input_schema: dict[str, Any],
+) -> dict[str, Any]:
+    if provider == 'anthropic':
+        return run_anthropic_structured_output(model, system_prompt, user_prompt, input_schema)
+
+    if provider == 'openai':
+        return run_openai_structured_output(model, system_prompt, user_prompt, input_schema)
+
+    if provider == 'gemini':
+        return run_gemini_structured_output(model, system_prompt, user_prompt, input_schema)
+
+    raise AgentExecutionError(f'Unsupported model provider "{provider}".')
