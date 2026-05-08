@@ -1,8 +1,10 @@
-import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 import type { AppNodeData } from "../../store/flow";
 
-export default function AgentNode({ data, selected }: NodeProps<{ data: AppNodeData }>) {
-  const d = data as unknown as AppNodeData;
+type AgentN = Node<AppNodeData, "agent">;
+
+export default function AgentNode({ data, selected }: NodeProps<AgentN>) {
+  const d = data;
   const cfg = d.config as { provider: string; model: string; user_prompt: string };
   return (
     <div className={`node-card agent ${selected ? "selected" : ""}`}>

@@ -1,11 +1,13 @@
-import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { Handle, Position, type NodeProps, type Node } from "@xyflow/react";
 import type { AppNodeData } from "../../store/flow";
+
+type MicroserviceN = Node<AppNodeData, "microservice">;
 
 export default function MicroserviceNode({
   data,
   selected,
-}: NodeProps<{ data: AppNodeData }>) {
-  const d = data as unknown as AppNodeData;
+}: NodeProps<MicroserviceN>) {
+  const d = data;
   const cfg = d.config as { method: string; url: string };
   return (
     <div className={`node-card microservice ${selected ? "selected" : ""}`}>
