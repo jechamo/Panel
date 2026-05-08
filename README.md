@@ -17,6 +17,7 @@ La Fase 2 deja operativo el backend y el scaffold visual del frontend.
 2. Instala dependencias del frontend con `cd frontend && corepack pnpm install`.
 3. Ejecuta [scripts/run.sh](scripts/run.sh) en Unix o [scripts/run.ps1](scripts/run.ps1) en Windows.
 4. Comprueba `GET http://127.0.0.1:8000/health` y abre `http://127.0.0.1:5173`.
+5. Verifica que la cabecera del frontend muestra el estado de conexion con el backend en verde o rojo.
 
 ## Referencias
 

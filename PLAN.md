@@ -98,7 +98,7 @@ Vite + React + TS + Tailwind + React Flow. Canvas vacio con un boton flotante "A
 
 - 2026-05-08
 
-## [ ] Fase 3 - Conexion front-back
+## [x] Fase 3 - Conexion front-back
 
 **Descripcion**
 
@@ -118,6 +118,10 @@ CORS configurado en backend. Cliente API en frontend (lib/api.ts). Indicador de 
 - frontend/src/App.tsx
 - frontend/src/components/ui/*
 - README.md
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 4 - Paneles de configuracion
 

@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     app_env: str = "development"
     host: str = "127.0.0.1"
     port: int = 8000
+    cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
 
     model_config = SettingsConfigDict(
         env_file=".env",
