@@ -255,7 +255,7 @@ Generar JSON schema desde la lista de campos del nodo. Pasar al SDK como tools (
 
 - 2026-05-08
 
-## [ ] Fase 9 - Adjuntos: upload y parseo
+## [x] Fase 9 - Adjuntos: upload y parseo
 
 **Descripcion**
 
@@ -277,6 +277,10 @@ Endpoint POST /files/upload. Parsers para docx/xlsx/pdf que devuelven texto. Alm
 - backend/storage/uploads/*
 - frontend/src/components/panels/*
 - frontend/src/lib/*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 10 - Templating de variables
 

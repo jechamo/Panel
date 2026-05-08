@@ -8,8 +8,11 @@ export type JsonObject = { [key: string]: JsonValue };
 
 export type AttachmentReference = {
   id: string;
+  flowId: string;
   mimeType: string;
   name: string;
+  storedName: string;
+  variableName: string;
 };
 
 export type OutputField = {

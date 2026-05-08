@@ -1,5 +1,6 @@
 import type {
   AgentNodeConfig,
+  AttachmentReference,
   FlowDocument,
   FlowPayload,
   FlowSummary,
@@ -135,4 +136,23 @@ export async function runAgentNode(nodeId: string, config: AgentNodeConfig): Pro
       },
     }),
   });
+}
+
+export async function uploadAttachment(flowId: string, file: File): Promise<AttachmentReference> {
+  const formData = new FormData();
+  formData.append('flow_id', flowId);
+  formData.append('file', file);
+
+  const response = await fetch(`${getApiBaseUrl()}/files/upload`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  const payload = (await response.json()) as ApiEnvelope<AttachmentReference>;
+
+  if (!response.ok || !payload.ok) {
+    throw new Error(payload.error?.message ?? `Request failed with status ${response.status}`);
+  }
+
+  return payload.data;
 }

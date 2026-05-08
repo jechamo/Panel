@@ -1,6 +1,6 @@
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, DragEvent } from 'react';
 
-import { runAgentNode } from '../../lib/api';
+import { runAgentNode, uploadAttachment } from '../../lib/api';
 import { JsonViewer } from '../ui/json-viewer';
 import { useFlowStore } from '../../stores/flow-store';
 import type { AgentNodeData, AttachmentReference } from '../../lib/types';
@@ -11,16 +11,9 @@ type AgentConfigFormProps = {
   onChange: (nextNode: AgentNodeData) => void;
 };
 
-function mapAttachments(files: FileList): AttachmentReference[] {
-  return Array.from(files).map((file) => ({
-    id: crypto.randomUUID(),
-    mimeType: file.type || 'application/octet-stream',
-    name: file.name,
-  }));
-}
-
 export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps) {
   const { config } = node;
+  const currentFlowId = useFlowStore((state) => state.currentFlowId);
   const setNodeRuntimeState = useFlowStore((state) => state.setNodeRuntimeState);
 
   const updateConfig = (nextConfig: AgentNodeData['config']) => {
@@ -30,17 +23,54 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
     });
   };
 
-  const handleAttachmentSelect = (event: ChangeEvent<HTMLInputElement>) => {
+  const addAttachments = (attachments: AttachmentReference[]) => {
+    updateConfig({
+      ...config,
+      attachments: [...config.attachments, ...attachments],
+    });
+  };
+
+  const uploadFiles = async (files: FileList) => {
+    if (!currentFlowId) {
+      setNodeRuntimeState(nodeId, 'error', node.output, 'Guarda el flujo antes de subir adjuntos.');
+      return;
+    }
+
+    try {
+      const uploadedAttachments = await Promise.all(
+        Array.from(files).map((file) => uploadAttachment(currentFlowId, file)),
+      );
+      addAttachments(uploadedAttachments);
+      setNodeRuntimeState(nodeId, node.status, node.output, null);
+    }
+    catch (error) {
+      setNodeRuntimeState(
+        nodeId,
+        'error',
+        node.output,
+        error instanceof Error ? error.message : 'No se pudieron subir los adjuntos.',
+      );
+    }
+  };
+
+  const handleAttachmentSelect = async (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || event.target.files.length === 0) {
       return;
     }
 
-    updateConfig({
-      ...config,
-      attachments: [...config.attachments, ...mapAttachments(event.target.files)],
-    });
+    await uploadFiles(event.target.files);
 
     event.target.value = '';
+  };
+
+  const handleAttachmentDrop = async (event: DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+
+    if (event.dataTransfer.files.length === 0) {
+      return;
+    }
+
+    await uploadFiles(event.dataTransfer.files);
   };
 
   const handleRun = async () => {
@@ -132,7 +162,7 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.24em] text-mist/45">Adjuntos</p>
-            <p className="mt-1 text-sm text-mist/62">Se guardan como referencias locales hasta la fase de upload.</p>
+            <p className="mt-1 text-sm text-mist/62">Subida real a backend. Requiere guardar antes el flujo actual.</p>
           </div>
 
           <label className="rounded-full border border-tide/35 bg-tide/18 px-4 py-2 text-sm text-white transition hover:bg-tide/28">
@@ -141,11 +171,24 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
               accept=".docx,.xlsx,.pdf"
               className="hidden"
               multiple
-              onChange={handleAttachmentSelect}
+              onChange={(event) => {
+                void handleAttachmentSelect(event);
+              }}
               type="file"
             />
           </label>
         </div>
+
+        <label
+          className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-5 text-center text-sm text-mist/58 transition hover:border-tide/35 hover:text-white"
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            void handleAttachmentDrop(event);
+          }}
+        >
+          <span className="font-medium text-white">Arrastra .docx, .xlsx o .pdf aqui</span>
+          <span className="mt-2 text-mist/55">O usa el selector superior para subir varios archivos.</span>
+        </label>
 
         <div className="space-y-2">
           {config.attachments.length === 0 ? (
@@ -157,7 +200,9 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
               <div key={attachment.id} className="flex items-center justify-between gap-3 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-mist/72">
                 <div>
                   <p className="text-white">{attachment.name}</p>
-                  <p className="text-xs text-mist/45">{attachment.mimeType}</p>
+                  <p className="text-xs text-mist/45">
+                    {attachment.mimeType} · {'{{'}archivos.{attachment.variableName}{'}}'}
+                  </p>
                 </div>
 
                 <button
