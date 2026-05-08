@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     port: int = 8000
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
     flows_storage_dir: str = "storage/flows"
+    runs_storage_dir: str = "storage/runs"
     uploads_storage_dir: str = "storage/uploads"
     models_config_path: str = "config/models.yaml"
 

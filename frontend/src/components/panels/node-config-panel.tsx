@@ -1,10 +1,11 @@
 import type { WorkflowNode } from '../../lib/types';
 import { AgentConfigForm } from './agent-config-form';
 import { MicroserviceConfigForm } from './microservice-config-form';
+import { NodeRunLogsPanel } from './node-run-logs-panel';
 import { useFlowStore } from '../../stores/flow-store';
 
 export function NodeConfigPanel() {
-  const { nodes, selectedNodeId, selectNode, updateNodeData } = useFlowStore();
+  const { currentFlowId, nodes, selectedNodeId, selectNode, updateNodeData } = useFlowStore();
 
   const selectedNode = selectedNodeId
     ? nodes.find((node: WorkflowNode) => node.id === selectedNodeId)
@@ -43,19 +44,29 @@ export function NodeConfigPanel() {
       </div>
 
       <div className="max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
-        {selectedNode.data.kind === 'agent' ? (
-          <AgentConfigForm
-            node={selectedNode.data}
+        <div className="space-y-6">
+          {selectedNode.data.kind === 'agent' ? (
+            <AgentConfigForm
+              node={selectedNode.data}
+              nodeId={selectedNode.id}
+              onChange={(nextNode) => updateNodeData(selectedNode.id, () => nextNode)}
+            />
+          ) : (
+            <MicroserviceConfigForm
+              node={selectedNode.data}
+              nodeId={selectedNode.id}
+              onChange={(nextNode) => updateNodeData(selectedNode.id, () => nextNode)}
+            />
+          )}
+
+          <NodeRunLogsPanel
+            flowId={currentFlowId}
+            lastError={selectedNode.data.lastError}
             nodeId={selectedNode.id}
-            onChange={(nextNode) => updateNodeData(selectedNode.id, () => nextNode)}
+            nodeStatus={selectedNode.data.status}
+            outputSignature={JSON.stringify(selectedNode.data.output)}
           />
-        ) : (
-          <MicroserviceConfigForm
-            node={selectedNode.data}
-            nodeId={selectedNode.id}
-            onChange={(nextNode) => updateNodeData(selectedNode.id, () => nextNode)}
-          />
-        )}
+        </div>
       </div>
     </aside>
   );

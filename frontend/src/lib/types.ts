@@ -102,3 +102,16 @@ export type SettingsUpdatePayload = {
   openaiApiKey?: string;
   geminiApiKey?: string;
 };
+
+export type NodeRunLog = {
+  id: string;
+  flowId: string | null;
+  nodeId: string;
+  nodeKind: 'agent' | 'microservice';
+  status: 'success' | 'error';
+  startedAt: string;
+  finishedAt: string;
+  input: JsonValue;
+  output: JsonValue;
+  error: string | null;
+};

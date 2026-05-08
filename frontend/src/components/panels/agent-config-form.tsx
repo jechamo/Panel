@@ -4,6 +4,7 @@ import { runAgentNode, uploadAttachment } from '../../lib/api';
 import { JsonViewer } from '../ui/json-viewer';
 import { useFlowStore } from '../../stores/flow-store';
 import { useSettingsStore } from '../../stores/settings-store';
+import { useToastStore } from '../../stores/toast-store';
 import type { AgentNodeData, AttachmentReference } from '../../lib/types';
 
 type AgentConfigFormProps = {
@@ -17,6 +18,7 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
   const currentFlowId = useFlowStore((state) => state.currentFlowId);
   const setNodeRuntimeState = useFlowStore((state) => state.setNodeRuntimeState);
   const availableModels = useSettingsStore((state) => state.settings?.models ?? []);
+  const pushToast = useToastStore((state) => state.pushToast);
   const selectedModel = availableModels.find((model) => model.id === config.model);
 
   const updateConfig = (nextConfig: AgentNodeData['config']) => {
@@ -36,6 +38,7 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
   const uploadFiles = async (files: FileList) => {
     if (!currentFlowId) {
       setNodeRuntimeState(nodeId, 'error', node.output, 'Guarda el flujo antes de subir adjuntos.');
+      pushToast('Guarda el flujo antes de subir adjuntos.', 'error');
       return;
     }
 
@@ -45,14 +48,17 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
       );
       addAttachments(uploadedAttachments);
       setNodeRuntimeState(nodeId, node.status, node.output, null);
+      pushToast('Adjuntos subidos correctamente.', 'success');
     }
     catch (error) {
+      const nextMessage = error instanceof Error ? error.message : 'No se pudieron subir los adjuntos.';
       setNodeRuntimeState(
         nodeId,
         'error',
         node.output,
-        error instanceof Error ? error.message : 'No se pudieron subir los adjuntos.',
+        nextMessage,
       );
+      pushToast(nextMessage, 'error');
     }
   };
 
@@ -84,14 +90,17 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
         flowId: currentFlowId,
       });
       setNodeRuntimeState(nodeId, 'success', result.output, null);
+      pushToast('Nodo Agente ejecutado correctamente.', 'success');
     }
     catch (error) {
+      const nextMessage = error instanceof Error ? error.message : 'No se pudo ejecutar el agente.';
       setNodeRuntimeState(
         nodeId,
         'error',
         null,
-        error instanceof Error ? error.message : 'No se pudo ejecutar el agente.',
+        nextMessage,
       );
+      pushToast(nextMessage, 'error');
     }
   };
 

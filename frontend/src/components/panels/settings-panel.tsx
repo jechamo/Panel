@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useSettingsStore } from '../../stores/settings-store';
+import { useToastStore } from '../../stores/toast-store';
 
 type SettingsPanelProps = {
   isOpen: boolean;
@@ -9,6 +10,7 @@ type SettingsPanelProps = {
 
 export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const { error, isLoading, isSaving, loadSettings, saveSettings, settings } = useSettingsStore();
+  const pushToast = useToastStore((state) => state.pushToast);
   const [anthropicApiKey, setAnthropicApiKey] = useState('');
   const [openaiApiKey, setOpenaiApiKey] = useState('');
   const [geminiApiKey, setGeminiApiKey] = useState('');
@@ -39,9 +41,11 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       setOpenaiApiKey('');
       setGeminiApiKey('');
       setMessage('Settings guardados en backend/.env.');
+      pushToast('Settings guardados en backend/.env.', 'success');
     }
-    catch {
+    catch (error) {
       setMessage(null);
+      pushToast(error instanceof Error ? error.message : 'No se pudieron guardar Settings.', 'error');
     }
   };
 

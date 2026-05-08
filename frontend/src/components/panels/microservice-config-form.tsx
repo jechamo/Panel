@@ -1,6 +1,7 @@
 import { runMicroserviceNode } from '../../lib/api';
 import { JsonViewer } from '../ui/json-viewer';
 import { useFlowStore } from '../../stores/flow-store';
+import { useToastStore } from '../../stores/toast-store';
 import type { MicroserviceNodeData } from '../../lib/types';
 
 const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;
@@ -15,6 +16,7 @@ export function MicroserviceConfigForm({ node, nodeId, onChange }: MicroserviceC
   const { config } = node;
   const currentFlowId = useFlowStore((state) => state.currentFlowId);
   const setNodeRuntimeState = useFlowStore((state) => state.setNodeRuntimeState);
+  const pushToast = useToastStore((state) => state.pushToast);
 
   const updateConfig = (nextConfig: MicroserviceNodeData['config']) => {
     onChange({
@@ -31,14 +33,17 @@ export function MicroserviceConfigForm({ node, nodeId, onChange }: MicroserviceC
         flowId: currentFlowId,
       });
       setNodeRuntimeState(nodeId, 'success', result.output, null);
+      pushToast('Nodo Microservicio ejecutado correctamente.', 'success');
     }
     catch (error) {
+      const nextMessage = error instanceof Error ? error.message : 'No se pudo ejecutar el microservicio.';
       setNodeRuntimeState(
         nodeId,
         'error',
         null,
-        error instanceof Error ? error.message : 'No se pudo ejecutar el microservicio.',
+        nextMessage,
       );
+      pushToast(nextMessage, 'error');
     }
   };
 

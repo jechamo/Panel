@@ -5,6 +5,7 @@ import type {
   FlowPayload,
   FlowSummary,
   JsonValue,
+  NodeRunLog,
   SettingsSnapshot,
   SettingsUpdatePayload,
   MicroserviceNodeConfig,
@@ -121,6 +122,18 @@ export async function updateFlow(flow: FlowDocument): Promise<FlowDocument> {
     method: 'PUT',
     body: JSON.stringify(flow),
   });
+}
+
+export async function listNodeRuns(
+  nodeId: string,
+  flowId?: string | null,
+): Promise<NodeRunLog[]> {
+  const searchParams = new URLSearchParams({ nodeId });
+  if (flowId) {
+    searchParams.set('flowId', flowId);
+  }
+
+  return requestEnvelope<NodeRunLog[]>(`/runs?${searchParams.toString()}`);
 }
 
 export async function getSettingsSnapshot(): Promise<SettingsSnapshot> {

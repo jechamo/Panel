@@ -410,7 +410,7 @@ Componente que renderiza el JSON de salida con campos colapsables, copia al clip
 
 - 2026-05-09
 
-## [ ] Fase 15 - Polish
+## [x] Fase 15 - Polish
 
 **Descripcion**
 
@@ -430,6 +430,10 @@ Manejo robusto de errores en UI (toasts), panel de logs por nodo (input + output
 - frontend/src/stores/*
 - backend/storage/runs/*
 - README.md
+
+**Fecha completada**
+
+- 2026-05-09
 
 ## Notas
 

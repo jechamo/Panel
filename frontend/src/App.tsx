@@ -5,6 +5,7 @@ import { NodeConfigPanel } from './components/panels/node-config-panel';
 import { SettingsPanel } from './components/panels/settings-panel';
 import { ConnectionIndicator } from './components/ui/connection-indicator';
 import { FlowPersistenceBar } from './components/ui/flow-persistence-bar';
+import { ToastRegion } from './components/ui/toast-region';
 import { useSettingsStore } from './stores/settings-store';
 
 export default function App() {
@@ -54,6 +55,7 @@ export default function App() {
 				</div>
 			</div>
 			<SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+			<ToastRegion />
 		</div>
 	);
 }

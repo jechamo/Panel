@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react';
 import { createFlow, getFlow, listFlows, runFlow, updateFlow } from '../../lib/api';
 import type { FlowSummary } from '../../lib/types';
 import { useFlowStore } from '../../stores/flow-store';
+import { useToastStore } from '../../stores/toast-store';
 
 export function FlowPersistenceBar() {
   const { buildFlowPayload, currentFlowId, currentFlowName, loadFlow, setCurrentFlowMeta } = useFlowStore();
+  const pushToast = useToastStore((state) => state.pushToast);
   const [flows, setFlows] = useState<FlowSummary[]>([]);
   const [isListOpen, setIsListOpen] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
@@ -25,7 +27,9 @@ export function FlowPersistenceBar() {
       setFlows(await listFlows());
     }
     catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No se pudo cargar la lista de flujos.');
+      const nextMessage = error instanceof Error ? error.message : 'No se pudo cargar la lista de flujos.';
+      setMessage(nextMessage);
+      pushToast(nextMessage, 'error');
     }
   };
 
@@ -40,14 +44,18 @@ export function FlowPersistenceBar() {
         : await createFlow(payload);
 
       setCurrentFlowMeta(document.id, document.name);
-      setMessage(currentFlowId ? 'Flujo actualizado.' : 'Flujo guardado.');
+      const nextMessage = currentFlowId ? 'Flujo actualizado.' : 'Flujo guardado.';
+      setMessage(nextMessage);
+      pushToast(nextMessage, 'success');
 
       if (isListOpen) {
         await refreshFlows();
       }
     }
     catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No se pudo guardar el flujo.');
+      const nextMessage = error instanceof Error ? error.message : 'No se pudo guardar el flujo.';
+      setMessage(nextMessage);
+      pushToast(nextMessage, 'error');
     }
     finally {
       setIsSaving(false);
@@ -59,10 +67,14 @@ export function FlowPersistenceBar() {
       const flow = await getFlow(flowId);
       loadFlow(flow);
       setIsListOpen(false);
-      setMessage(`Flujo ${flow.name} cargado.`);
+      const nextMessage = `Flujo ${flow.name} cargado.`;
+      setMessage(nextMessage);
+      pushToast(nextMessage, 'success');
     }
     catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No se pudo cargar el flujo.');
+      const nextMessage = error instanceof Error ? error.message : 'No se pudo cargar el flujo.';
+      setMessage(nextMessage);
+      pushToast(nextMessage, 'error');
     }
   };
 
@@ -79,14 +91,18 @@ export function FlowPersistenceBar() {
       const executedFlow = await runFlow(persistedFlow.id);
       loadFlow(executedFlow);
       setCurrentFlowMeta(executedFlow.id, executedFlow.name);
-      setMessage('Flujo ejecutado. Estados y outputs sincronizados desde backend.');
+      const nextMessage = 'Flujo ejecutado. Estados y outputs sincronizados desde backend.';
+      setMessage(nextMessage);
+      pushToast(nextMessage, 'success');
 
       if (isListOpen) {
         await refreshFlows();
       }
     }
     catch (error) {
-      setMessage(error instanceof Error ? error.message : 'No se pudo ejecutar el flujo.');
+      const nextMessage = error instanceof Error ? error.message : 'No se pudo ejecutar el flujo.';
+      setMessage(nextMessage);
+      pushToast(nextMessage, 'error');
     }
     finally {
       setIsRunning(false);
