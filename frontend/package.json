@@ -3,5 +3,27 @@
   "private": true,
   "version": "0.0.0",
   "packageManager": "pnpm@10.0.0",
-  "description": "Bootstrap placeholder. Frontend setup starts in Fase 2."
+  "type": "module",
+  "description": "Frontend scaffold for the Panel app.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.8.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
 }

@@ -65,7 +65,7 @@ Nota futura: la persistencia de flujos sigue prevista en Fase 5 con almacenamien
 
 - 2026-05-08
 
-## [ ] Fase 2 - Frontend scaffold
+## [x] Fase 2 - Frontend scaffold
 
 **Descripcion**
 
@@ -93,6 +93,10 @@ Vite + React + TS + Tailwind + React Flow. Canvas vacio con un boton flotante "A
 - scripts/run.sh
 - scripts/run.ps1
 - README.md
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 3 - Conexion front-back
 

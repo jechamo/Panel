@@ -11,11 +11,12 @@ Mini-n8n local para encadenar agentes LLM y microservicios HTTP mediante un canv
 
 ## Arranque local
 
-La Fase 1 deja operativo el backend. El frontend todavia no esta implementado.
+La Fase 2 deja operativo el backend y el scaffold visual del frontend.
 
 1. Instala dependencias del backend desde [backend/pyproject.toml](backend/pyproject.toml).
-2. Ejecuta [scripts/run.sh](scripts/run.sh) en Unix o [scripts/run.ps1](scripts/run.ps1) en Windows.
-3. Comprueba `GET http://127.0.0.1:8000/health`.
+2. Instala dependencias del frontend con `cd frontend && corepack pnpm install`.
+3. Ejecuta [scripts/run.sh](scripts/run.sh) en Unix o [scripts/run.ps1](scripts/run.ps1) en Windows.
+4. Comprueba `GET http://127.0.0.1:8000/health` y abre `http://127.0.0.1:5173`.
 
 ## Referencias
 
