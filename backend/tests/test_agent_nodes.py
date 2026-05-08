@@ -7,7 +7,10 @@ client = TestClient(app)
 
 def test_run_agent_node_returns_text(monkeypatch) -> None:
     class FakeResult:
-        output = 'Agent response'
+        output = {
+            'summary': 'Agent response',
+            'next_step': 'Send the report',
+        }
         status_code = 200
 
         def model_dump(self, mode='json'):
@@ -24,6 +27,10 @@ def test_run_agent_node_returns_text(monkeypatch) -> None:
             'kind': 'agent',
             'config': {
                 'model': 'manual-model-id',
+                'outputFields': [
+                    {'id': 'field-1', 'name': 'summary', 'description': 'Short summary'},
+                    {'id': 'field-2', 'name': 'next_step', 'description': 'Recommended next step'},
+                ],
                 'systemPrompt': 'You are a helper.',
                 'userPrompt': 'Say hello.',
             },
@@ -32,6 +39,9 @@ def test_run_agent_node_returns_text(monkeypatch) -> None:
 
     assert response.status_code == 200
     assert response.json()['data'] == {
-        'output': 'Agent response',
+        'output': {
+            'summary': 'Agent response',
+            'next_step': 'Send the report',
+        },
         'status_code': 200,
     }

@@ -17,9 +17,16 @@ class MicroserviceNodeConfig(BaseModel):
 
 
 class AgentNodeConfig(BaseModel):
+    outputFields: list['OutputFieldItem']
     systemPrompt: str
     userPrompt: str
     model: str
+
+
+class OutputFieldItem(BaseModel):
+    id: str
+    name: str
+    description: str
 
 
 class MicroserviceNodeRunRequest(BaseModel):

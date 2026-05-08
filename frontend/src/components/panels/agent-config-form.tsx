@@ -1,6 +1,7 @@
 import type { ChangeEvent } from 'react';
 
 import { runAgentNode } from '../../lib/api';
+import { JsonViewer } from '../ui/json-viewer';
 import { useFlowStore } from '../../stores/flow-store';
 import type { AgentNodeData, AttachmentReference } from '../../lib/types';
 
@@ -112,14 +113,18 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
         </section>
       ) : null}
 
-      {typeof node.output === 'string' ? (
+      {node.output ? (
         <section className="space-y-3 rounded-[28px] border border-tide/20 bg-tide/10 p-4">
           <div>
             <p className="text-xs uppercase tracking-[0.24em] text-tide/80">Output</p>
-            <p className="mt-1 text-sm text-mist/70">Respuesta textual cruda del agente Anthropic.</p>
+            <p className="mt-1 text-sm text-mist/70">Respuesta estructurada validada contra los campos declarados.</p>
           </div>
 
-          <pre className="whitespace-pre-wrap rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm leading-6 text-mist/88">{node.output}</pre>
+          {typeof node.output === 'string' ? (
+            <pre className="whitespace-pre-wrap rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm leading-6 text-mist/88">{node.output}</pre>
+          ) : (
+            <JsonViewer data={node.output} />
+          )}
         </section>
       ) : null}
 

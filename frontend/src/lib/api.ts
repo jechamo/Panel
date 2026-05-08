@@ -22,7 +22,7 @@ export type MicroserviceRunResult = {
 };
 
 export type AgentRunResult = {
-  output: string;
+  output: JsonValue;
   status_code: number;
 };
 
@@ -129,6 +129,7 @@ export async function runAgentNode(nodeId: string, config: AgentNodeConfig): Pro
       kind: 'agent',
       config: {
         model: config.model,
+        outputFields: config.outputFields,
         systemPrompt: config.systemPrompt,
         userPrompt: config.userPrompt,
       },

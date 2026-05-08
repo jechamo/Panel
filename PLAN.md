@@ -230,7 +230,7 @@ Cliente anthropic configurado. Llamada con system + user prompt. Sin schema estr
 
 - 2026-05-08
 
-## [ ] Fase 8 - Salida estructurada
+## [x] Fase 8 - Salida estructurada
 
 **Descripcion**
 
@@ -250,6 +250,10 @@ Generar JSON schema desde la lista de campos del nodo. Pasar al SDK como tools (
 - backend/app/models/*
 - backend/tests/*
 - frontend/src/components/panels/*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 9 - Adjuntos: upload y parseo
 
