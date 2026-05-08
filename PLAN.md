@@ -35,7 +35,7 @@ Esta es la Fase A. Crear la documentacion base del repo, la estructura de carpet
 
 - 2026-05-08
 
-## [ ] Fase 1 - Backend scaffold
+## [x] Fase 1 - Backend scaffold
 
 **Descripcion**
 
@@ -58,6 +58,12 @@ FastAPI minimo corriendo. Endpoint GET /health -> { "ok": true }. Configuracion 
 - scripts/run.sh
 - scripts/run.ps1
 - README.md
+
+Nota futura: la persistencia de flujos sigue prevista en Fase 5 con almacenamiento JSON en `backend/storage/flows/`.
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 2 - Frontend scaffold
 

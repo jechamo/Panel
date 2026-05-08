@@ -7,11 +7,15 @@ Mini-n8n local para encadenar agentes LLM y microservicios HTTP mediante un canv
 - Python 3.11+
 - Node.js 20+
 - pnpm
-- uv o pip
+- pip
 
 ## Arranque local
 
-El arranque orquestado se implementa en fases posteriores. El punto previsto de entrada es [scripts/run.sh](scripts/run.sh) en Unix y [scripts/run.ps1](scripts/run.ps1) en Windows.
+La Fase 1 deja operativo el backend. El frontend todavia no esta implementado.
+
+1. Instala dependencias del backend desde [backend/pyproject.toml](backend/pyproject.toml).
+2. Ejecuta [scripts/run.sh](scripts/run.sh) en Unix o [scripts/run.ps1](scripts/run.ps1) en Windows.
+3. Comprueba `GET http://127.0.0.1:8000/health`.
 
 ## Referencias
 
