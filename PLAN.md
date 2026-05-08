@@ -306,7 +306,7 @@ Modulo templating/ que resuelve {{archivos.x}}, {{input.y}}, {{env.Z}}. Integrad
 
 - 2026-05-08
 
-## [ ] Fase 11 - Encadenamiento
+## [x] Fase 11 - Encadenamiento
 
 **Descripcion**
 
@@ -326,6 +326,10 @@ Cuando un nodo se ejecuta, su output queda disponible para el siguiente conectad
 - backend/app/api/*
 - backend/tests/*
 - frontend/src/lib/*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 12 - Run global y Run de nodo
 

@@ -53,6 +53,59 @@ def update_flow(flow_id: str, payload: FlowUpdateRequest) -> FlowDocument | None
     return document
 
 
+def get_predecessor_node_id(flow_id: str, node_id: str) -> str | None:
+    document = get_flow(flow_id)
+    if document is None:
+        return None
+
+    incoming_edges = [edge for edge in document.edges if edge.get('target') == node_id]
+    if not incoming_edges:
+        return None
+
+    if len(incoming_edges) > 1:
+        raise ValueError('Only one predecessor edge is supported in this phase.')
+
+    predecessor_id = incoming_edges[0].get('source')
+    return predecessor_id if isinstance(predecessor_id, str) else None
+
+
+def get_node_output(flow_id: str, node_id: str):
+    document = get_flow(flow_id)
+    if document is None:
+        return None
+
+    node = _find_node(document, node_id)
+    if node is None:
+        return None
+
+    return node.get('data', {}).get('output')
+
+
+def set_node_runtime_state(
+    flow_id: str,
+    node_id: str,
+    *,
+    status: str,
+    output,
+    last_error,
+) -> FlowDocument | None:
+    document = get_flow(flow_id)
+    if document is None:
+        return None
+
+    node = _find_node(document, node_id)
+    if node is None:
+        return None
+
+    node_data = node.setdefault('data', {})
+    node_data['status'] = status
+    node_data['output'] = output
+    node_data['lastError'] = last_error
+
+    _write_flow(document)
+    return document
+
+
 def delete_flow(flow_id: str) -> bool:
     file_path = _flow_file_path(flow_id)
     if not file_path.exists():
@@ -67,3 +120,11 @@ def _write_flow(document: FlowDocument) -> None:
         json.dumps(document.model_dump(mode='json'), indent=2),
         encoding='utf-8',
     )
+
+
+def _find_node(document: FlowDocument, node_id: str) -> dict | None:
+    for node in document.nodes:
+        if node.get('id') == node_id:
+            return node
+
+    return None

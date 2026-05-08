@@ -24,6 +24,7 @@ La Fase 2 deja operativo el backend y el scaffold visual del frontend.
 9. Para nodos Agente, define `ANTHROPIC_API_KEY` en `backend/.env`, escribe un model id valido en el nodo y pulsa `Run` para ver la salida textual.
 10. Para subir adjuntos en un nodo Agente, guarda antes el flujo y luego arrastra o selecciona `.docx`, `.xlsx` o `.pdf`; el backend los guarda en `backend/storage/uploads/<flow_id>/<file_id>/`.
 11. Tanto el nodo Agente como el nodo Microservicio resuelven plantillas backend como `{{env.KEY}}`, `{{input.campo}}` y `{{archivos.nombre}}` justo antes de ejecutarse.
+12. Si un nodo tiene un predecesor conectado y usas `{{input.*}}`, el backend tomara el output cacheado del nodo anterior desde el flujo guardado; ejecuta primero el nodo predecesor al menos una vez.
 
 ## Referencias
 
