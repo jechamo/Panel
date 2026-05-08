@@ -1,0 +1,10 @@
+node_modules/
+__pycache__/
+.venv/
+.env
+dist/
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
+backend/storage/runs/*
+!backend/storage/runs/.gitkeep
+.DS_Store

@@ -1,0 +1,7 @@
+{
+  "name": "panel-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.0.0",
+  "description": "Bootstrap placeholder. Frontend setup starts in Fase 2."
+}
