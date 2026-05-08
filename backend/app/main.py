@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.flows import router as flows_router
 from app.core.settings import get_settings
 from app.models.health import HealthResponse
 
@@ -15,6 +16,8 @@ app.add_middleware(
 	allow_methods=["*"],
 	allow_headers=["*"],
 )
+
+app.include_router(flows_router)
 
 
 @app.get("/health", response_model=HealthResponse)

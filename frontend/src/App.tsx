@@ -1,6 +1,7 @@
 import { FlowCanvas } from './components/canvas/flow-canvas';
 import { NodeConfigPanel } from './components/panels/node-config-panel';
 import { ConnectionIndicator } from './components/ui/connection-indicator';
+import { FlowPersistenceBar } from './components/ui/flow-persistence-bar';
 
 export default function App() {
 	return (
@@ -19,8 +20,9 @@ export default function App() {
 
 					<div className="flex flex-col gap-3 md:items-end">
 						<ConnectionIndicator />
+						<FlowPersistenceBar />
 						<div className="rounded-3xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-mist/72">
-							Persistencia de flujos: prevista en Fase 5.
+							Los flujos ahora se guardan como JSON versionado en backend/storage/flows/.
 						</div>
 					</div>
 				</header>

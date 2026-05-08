@@ -1,4 +1,4 @@
-import type { Node } from '@xyflow/react';
+import type { Edge, Node } from '@xyflow/react';
 
 export type NodeKind = 'agent' | 'microservice';
 export type NodeStatus = 'idle' | 'running' | 'success' | 'error';
@@ -56,3 +56,21 @@ export type MicroserviceNodeData = BaseWorkflowNodeData & {
 export type WorkflowNodeData = AgentNodeData | MicroserviceNodeData;
 
 export type WorkflowNode = Node<WorkflowNodeData, 'workflow'>;
+export type WorkflowEdge = Edge;
+
+export type FlowPayload = {
+  name: string;
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+  version: 1;
+};
+
+export type FlowDocument = FlowPayload & {
+  id: string;
+};
+
+export type FlowSummary = {
+  id: string;
+  name: string;
+  version: 1;
+};

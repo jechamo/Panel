@@ -12,6 +12,8 @@ import { create } from 'zustand';
 import type {
   AgentNodeConfig,
   AgentNodeData,
+  FlowDocument,
+  FlowPayload,
   MicroserviceNodeConfig,
   MicroserviceNodeData,
   NodeKind,
@@ -20,11 +22,16 @@ import type {
 } from '../lib/types';
 
 type FlowState = {
+  currentFlowId: string | null;
+  currentFlowName: string;
   edges: Edge[];
   nodes: WorkflowNode[];
   selectedNodeId: string | null;
   addNode: (kind: NodeKind) => void;
+  buildFlowPayload: () => FlowPayload;
+  loadFlow: (flow: FlowDocument) => void;
   selectNode: (nodeId: string | null) => void;
+  setCurrentFlowMeta: (flowId: string | null, name: string) => void;
   onConnect: (connection: Connection) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onNodesChange: (changes: NodeChange<WorkflowNode>[]) => void;
@@ -103,7 +110,9 @@ function makeNode(kind: NodeKind, index: number): WorkflowNode {
   };
 }
 
-export const useFlowStore = create<FlowState>((set) => ({
+export const useFlowStore = create<FlowState>((set, get) => ({
+  currentFlowId: null,
+  currentFlowName: 'Mi flujo',
   nodes: [],
   edges: [],
   selectedNodeId: null,
@@ -116,7 +125,26 @@ export const useFlowStore = create<FlowState>((set) => ({
         selectedNodeId: nextNode.id,
       };
     }),
+  buildFlowPayload: (): FlowPayload => {
+    const state = get();
+
+    return {
+      name: state.currentFlowName.trim() || 'Mi flujo',
+      nodes: state.nodes,
+      edges: state.edges,
+      version: 1,
+    };
+  },
+  loadFlow: (flow) =>
+    set(() => ({
+      currentFlowId: flow.id,
+      currentFlowName: flow.name,
+      nodes: flow.nodes,
+      edges: flow.edges,
+      selectedNodeId: null,
+    })),
   selectNode: (nodeId) => set(() => ({ selectedNodeId: nodeId })),
+  setCurrentFlowMeta: (flowId, name) => set(() => ({ currentFlowId: flowId, currentFlowName: name })),
   onConnect: (connection) =>
     set((state) => ({
       edges: addEdge(

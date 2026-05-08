@@ -1,3 +1,4 @@
+import type { WorkflowNode } from '../../lib/types';
 import { AgentConfigForm } from './agent-config-form';
 import { MicroserviceConfigForm } from './microservice-config-form';
 import { useFlowStore } from '../../stores/flow-store';
@@ -5,7 +6,9 @@ import { useFlowStore } from '../../stores/flow-store';
 export function NodeConfigPanel() {
   const { nodes, selectedNodeId, selectNode, updateNodeData } = useFlowStore();
 
-  const selectedNode = selectedNodeId ? nodes.find((node) => node.id === selectedNodeId) : undefined;
+  const selectedNode = selectedNodeId
+    ? nodes.find((node: WorkflowNode) => node.id === selectedNodeId)
+    : undefined;
 
   if (!selectedNode) {
     return (

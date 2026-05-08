@@ -148,7 +148,7 @@ Click en nodo -> abre panel lateral. Formulario completo para Agente y para Micr
 
 - 2026-05-08
 
-## [ ] Fase 5 - Persistencia de flujos
+## [x] Fase 5 - Persistencia de flujos
 
 **Descripcion**
 
@@ -171,6 +171,10 @@ Endpoints POST /flows, GET /flows, GET /flows/{id}, PUT /flows/{id}, DELETE /flo
 - frontend/src/lib/*
 - frontend/src/components/ui/*
 - frontend/src/App.tsx
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 6 - Ejecutor de Microservicio
 
