@@ -77,7 +77,9 @@ export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps
     setNodeRuntimeState(nodeId, 'running', null, null);
 
     try {
-      const result = await runAgentNode(nodeId, config);
+      const result = await runAgentNode(nodeId, config, {
+        flowId: currentFlowId,
+      });
       setNodeRuntimeState(nodeId, 'success', result.output, null);
     }
     catch (error) {

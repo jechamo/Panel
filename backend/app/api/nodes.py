@@ -3,10 +3,10 @@ from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
 from app.core.responses import error_response, success_response
-from app.executors.agent_executor import AgentExecutionError, run_agent
+from app.executors.agent_executor import AgentExecutionError, run_agent_with_context
 from app.executors.microservice_executor import (
     MicroserviceExecutionError,
-    run_microservice,
+    run_microservice_with_context,
 )
 from app.models.node import NodeRunRequest
 
@@ -17,7 +17,7 @@ router = APIRouter(prefix='/nodes', tags=['nodes'])
 def run_node(node_id: str, payload: NodeRunRequest):
     if payload.kind == 'agent':
         try:
-            result = run_agent(payload.config)
+            result = run_agent_with_context(payload.config, payload.context)
         except AgentExecutionError as error:
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -41,7 +41,7 @@ def run_node(node_id: str, payload: NodeRunRequest):
         )
 
     try:
-        result = run_microservice(payload.config)
+        result = run_microservice_with_context(payload.config, payload.context)
     except MicroserviceExecutionError as error:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,

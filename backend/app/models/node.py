@@ -29,14 +29,21 @@ class OutputFieldItem(BaseModel):
     description: str
 
 
+class NodeExecutionContext(BaseModel):
+    flowId: str | None = None
+    input: Any = None
+
+
 class MicroserviceNodeRunRequest(BaseModel):
     kind: Literal['microservice']
     config: MicroserviceNodeConfig
+    context: NodeExecutionContext = Field(default_factory=NodeExecutionContext)
 
 
 class AgentNodeRunRequest(BaseModel):
     kind: Literal['agent']
     config: AgentNodeConfig
+    context: NodeExecutionContext = Field(default_factory=NodeExecutionContext)
 
 
 NodeRunRequest = Annotated[

@@ -3,7 +3,8 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 
 from app.llm.anthropic import build_structured_output_tool, get_anthropic_client
-from app.models.node import AgentNodeConfig, NodeRunResult, OutputFieldItem
+from app.models.node import AgentNodeConfig, NodeExecutionContext, NodeRunResult, OutputFieldItem
+from app.templating.resolver import TemplateResolutionError, resolve_template_value
 
 
 class AgentExecutionError(Exception):
@@ -11,10 +12,23 @@ class AgentExecutionError(Exception):
 
 
 def run_agent(config: AgentNodeConfig) -> NodeRunResult:
+    return run_agent_with_context(config, NodeExecutionContext())
+
+
+def run_agent_with_context(
+    config: AgentNodeConfig,
+    context: NodeExecutionContext,
+) -> NodeRunResult:
     if not config.model.strip():
         raise AgentExecutionError('Agent model is required before executing the node.')
 
-    if not config.userPrompt.strip():
+    try:
+        resolved_system_prompt = _resolve_prompt(config.systemPrompt, context)
+        resolved_user_prompt = _resolve_prompt(config.userPrompt, context)
+    except TemplateResolutionError as error:
+        raise AgentExecutionError(str(error)) from error
+
+    if not resolved_user_prompt.strip():
         raise AgentExecutionError('User prompt is required before executing the node.')
 
     if not config.outputFields:
@@ -33,11 +47,11 @@ def run_agent(config: AgentNodeConfig) -> NodeRunResult:
     response = client.messages.create(
         model=config.model,
         max_tokens=1024,
-        system=config.systemPrompt or None,
+        system=resolved_system_prompt or None,
         messages=[
             {
                 'role': 'user',
-                'content': config.userPrompt,
+                'content': resolved_user_prompt,
             }
         ],
         tool_choice={'type': 'tool', 'name': output_tool['name']},
@@ -93,3 +107,16 @@ def extract_tool_input(content_blocks: list[Any], tool_name: str) -> dict[str, A
     raise AgentExecutionError(
         'Anthropic response did not include the structured output tool payload.',
     )
+
+
+def _resolve_prompt(raw_prompt: str, context: NodeExecutionContext) -> str:
+    resolved_prompt = resolve_template_value(
+        raw_prompt,
+        flow_id=context.flowId,
+        input_data=context.input,
+    )
+
+    if isinstance(resolved_prompt, str):
+        return resolved_prompt
+
+    return str(resolved_prompt)

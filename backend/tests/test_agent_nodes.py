@@ -19,7 +19,10 @@ def test_run_agent_node_returns_text(monkeypatch) -> None:
                 'status_code': self.status_code,
             }
 
-    monkeypatch.setattr('app.api.nodes.run_agent', lambda config: FakeResult())
+    monkeypatch.setattr(
+        'app.api.nodes.run_agent_with_context',
+        lambda config, context: FakeResult(),
+    )
 
     response = client.post(
         '/nodes/node-agent/run',
@@ -33,6 +36,10 @@ def test_run_agent_node_returns_text(monkeypatch) -> None:
                 ],
                 'systemPrompt': 'You are a helper.',
                 'userPrompt': 'Say hello.',
+            },
+            'context': {
+                'flowId': 'flow-123',
+                'input': {'topic': 'hello'},
             },
         },
     )

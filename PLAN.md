@@ -282,7 +282,7 @@ Endpoint POST /files/upload. Parsers para docx/xlsx/pdf que devuelven texto. Alm
 
 - 2026-05-08
 
-## [ ] Fase 10 - Templating de variables
+## [x] Fase 10 - Templating de variables
 
 **Descripcion**
 
@@ -301,6 +301,10 @@ Modulo templating/ que resuelve {{archivos.x}}, {{input.y}}, {{env.Z}}. Integrad
 - backend/app/executors/*
 - backend/app/models/*
 - backend/tests/*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 11 - Encadenamiento
 

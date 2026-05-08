@@ -13,6 +13,7 @@ type MicroserviceConfigFormProps = {
 
 export function MicroserviceConfigForm({ node, nodeId, onChange }: MicroserviceConfigFormProps) {
   const { config } = node;
+  const currentFlowId = useFlowStore((state) => state.currentFlowId);
   const setNodeRuntimeState = useFlowStore((state) => state.setNodeRuntimeState);
 
   const updateConfig = (nextConfig: MicroserviceNodeData['config']) => {
@@ -26,7 +27,9 @@ export function MicroserviceConfigForm({ node, nodeId, onChange }: MicroserviceC
     setNodeRuntimeState(nodeId, 'running', null, null);
 
     try {
-      const result = await runMicroserviceNode(nodeId, config);
+      const result = await runMicroserviceNode(nodeId, config, {
+        flowId: currentFlowId,
+      });
       setNodeRuntimeState(nodeId, 'success', result.output, null);
     }
     catch (error) {

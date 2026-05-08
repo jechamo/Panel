@@ -27,6 +27,11 @@ export type AgentRunResult = {
   status_code: number;
 };
 
+type NodeExecutionContext = {
+  flowId?: string | null;
+  input?: JsonValue;
+};
+
 type ApiEnvelope<T> = {
   ok: boolean;
   data: T;
@@ -113,17 +118,23 @@ export async function updateFlow(flow: FlowDocument): Promise<FlowDocument> {
 export async function runMicroserviceNode(
   nodeId: string,
   config: MicroserviceNodeConfig,
+  context?: NodeExecutionContext,
 ): Promise<MicroserviceRunResult> {
   return requestEnvelope<MicroserviceRunResult>(`/nodes/${nodeId}/run`, {
     method: 'POST',
     body: JSON.stringify({
       kind: 'microservice',
       config,
+      context,
     }),
   });
 }
 
-export async function runAgentNode(nodeId: string, config: AgentNodeConfig): Promise<AgentRunResult> {
+export async function runAgentNode(
+  nodeId: string,
+  config: AgentNodeConfig,
+  context?: NodeExecutionContext,
+): Promise<AgentRunResult> {
   return requestEnvelope<AgentRunResult>(`/nodes/${nodeId}/run`, {
     method: 'POST',
     body: JSON.stringify({
@@ -134,6 +145,7 @@ export async function runAgentNode(nodeId: string, config: AgentNodeConfig): Pro
         systemPrompt: config.systemPrompt,
         userPrompt: config.userPrompt,
       },
+      context,
     }),
   });
 }
