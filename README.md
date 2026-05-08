@@ -21,6 +21,7 @@ La Fase 2 deja operativo el backend y el scaffold visual del frontend.
 6. Haz click en un nodo del canvas para abrir el panel lateral y editar su configuracion en memoria.
 7. Usa los botones Guardar y Cargar para persistir flujos en `backend/storage/flows/`.
 8. En un nodo Microservicio, pulsa `Run` para ejecutar la request y revisar su salida JSON en el panel.
+9. Para nodos Agente, define `ANTHROPIC_API_KEY` en `backend/.env`, escribe un model id valido en el nodo y pulsa `Run` para ver la salida textual.
 
 ## Referencias
 

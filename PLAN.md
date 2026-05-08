@@ -203,7 +203,7 @@ Endpoint POST /nodes/{id}/run para nodo de tipo microservicio. Hace la llamada H
 
 - 2026-05-08
 
-## [ ] Fase 7 - Ejecutor de Agente (proveedor unico: Anthropic)
+## [x] Fase 7 - Ejecutor de Agente (proveedor unico: Anthropic)
 
 **Descripcion**
 
@@ -225,6 +225,10 @@ Cliente anthropic configurado. Llamada con system + user prompt. Sin schema estr
 - backend/tests/*
 - frontend/src/components/panels/*
 - frontend/src/lib/*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 8 - Salida estructurada
 

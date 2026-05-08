@@ -46,6 +46,7 @@ export function NodeConfigPanel() {
         {selectedNode.data.kind === 'agent' ? (
           <AgentConfigForm
             node={selectedNode.data}
+            nodeId={selectedNode.id}
             onChange={(nextNode) => updateNodeData(selectedNode.id, () => nextNode)}
           />
         ) : (

@@ -1,4 +1,11 @@
-import type { FlowDocument, FlowPayload, FlowSummary, JsonValue, MicroserviceNodeConfig } from './types';
+import type {
+  AgentNodeConfig,
+  FlowDocument,
+  FlowPayload,
+  FlowSummary,
+  JsonValue,
+  MicroserviceNodeConfig,
+} from './types';
 
 export type HealthResponse = {
   ok: boolean;
@@ -11,6 +18,11 @@ export type ApiError = {
 
 export type MicroserviceRunResult = {
   output: JsonValue;
+  status_code: number;
+};
+
+export type AgentRunResult = {
+  output: string;
   status_code: number;
 };
 
@@ -106,6 +118,20 @@ export async function runMicroserviceNode(
     body: JSON.stringify({
       kind: 'microservice',
       config,
+    }),
+  });
+}
+
+export async function runAgentNode(nodeId: string, config: AgentNodeConfig): Promise<AgentRunResult> {
+  return requestEnvelope<AgentRunResult>(`/nodes/${nodeId}/run`, {
+    method: 'POST',
+    body: JSON.stringify({
+      kind: 'agent',
+      config: {
+        model: config.model,
+        systemPrompt: config.systemPrompt,
+        userPrompt: config.userPrompt,
+      },
     }),
   });
 }

@@ -1,6 +1,6 @@
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class HeaderItem(BaseModel):
@@ -16,9 +16,26 @@ class MicroserviceNodeConfig(BaseModel):
     payload: str
 
 
-class NodeRunRequest(BaseModel):
+class AgentNodeConfig(BaseModel):
+    systemPrompt: str
+    userPrompt: str
+    model: str
+
+
+class MicroserviceNodeRunRequest(BaseModel):
     kind: Literal['microservice']
     config: MicroserviceNodeConfig
+
+
+class AgentNodeRunRequest(BaseModel):
+    kind: Literal['agent']
+    config: AgentNodeConfig
+
+
+NodeRunRequest = Annotated[
+    AgentNodeRunRequest | MicroserviceNodeRunRequest,
+    Field(discriminator='kind'),
+]
 
 
 class NodeRunResult(BaseModel):

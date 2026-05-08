@@ -1,14 +1,11 @@
 import type { ChangeEvent } from 'react';
 
+import { runAgentNode } from '../../lib/api';
+import { useFlowStore } from '../../stores/flow-store';
 import type { AgentNodeData, AttachmentReference } from '../../lib/types';
 
-const modelOptions = [
-  { value: 'anthropic', label: 'Anthropic (Settings pendiente)' },
-  { value: 'openai', label: 'OpenAI (Settings pendiente)' },
-  { value: 'gemini', label: 'Gemini (Settings pendiente)' },
-];
-
 type AgentConfigFormProps = {
+  nodeId: string;
   node: AgentNodeData;
   onChange: (nextNode: AgentNodeData) => void;
 };
@@ -21,8 +18,9 @@ function mapAttachments(files: FileList): AttachmentReference[] {
   }));
 }
 
-export function AgentConfigForm({ node, onChange }: AgentConfigFormProps) {
+export function AgentConfigForm({ node, nodeId, onChange }: AgentConfigFormProps) {
   const { config } = node;
+  const setNodeRuntimeState = useFlowStore((state) => state.setNodeRuntimeState);
 
   const updateConfig = (nextConfig: AgentNodeData['config']) => {
     onChange({
@@ -44,22 +42,46 @@ export function AgentConfigForm({ node, onChange }: AgentConfigFormProps) {
     event.target.value = '';
   };
 
+  const handleRun = async () => {
+    setNodeRuntimeState(nodeId, 'running', null, null);
+
+    try {
+      const result = await runAgentNode(nodeId, config);
+      setNodeRuntimeState(nodeId, 'success', result.output, null);
+    }
+    catch (error) {
+      setNodeRuntimeState(
+        nodeId,
+        'error',
+        null,
+        error instanceof Error ? error.message : 'No se pudo ejecutar el agente.',
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <button
+          className="rounded-full border border-tide/35 bg-tide/18 px-4 py-2 text-sm font-medium text-white transition hover:bg-tide/28"
+          onClick={() => void handleRun()}
+          type="button"
+        >
+          {node.status === 'running' ? 'Ejecutando...' : 'Run'}
+        </button>
+        <span className="text-xs uppercase tracking-[0.24em] text-mist/45">Estado: {node.status}</span>
+      </div>
+
       <section className="space-y-3">
         <div>
-          <label className="text-xs uppercase tracking-[0.24em] text-mist/45">Modelo</label>
-          <select
+          <label className="text-xs uppercase tracking-[0.24em] text-mist/45">Modelo Anthropic</label>
+          <input
             className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition focus:border-tide/60"
             onChange={(event) => updateConfig({ ...config, model: event.target.value })}
+            placeholder="ID exacto del modelo configurado"
+            type="text"
             value={config.model}
-          >
-            {modelOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         <div>
@@ -82,6 +104,24 @@ export function AgentConfigForm({ node, onChange }: AgentConfigFormProps) {
           />
         </div>
       </section>
+
+      {node.lastError ? (
+        <section className="rounded-[28px] border border-ember/20 bg-ember/10 p-4">
+          <p className="text-xs uppercase tracking-[0.24em] text-ember/75">Error</p>
+          <p className="mt-2 text-sm leading-6 text-ember">{node.lastError}</p>
+        </section>
+      ) : null}
+
+      {typeof node.output === 'string' ? (
+        <section className="space-y-3 rounded-[28px] border border-tide/20 bg-tide/10 p-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-tide/80">Output</p>
+            <p className="mt-1 text-sm text-mist/70">Respuesta textual cruda del agente Anthropic.</p>
+          </div>
+
+          <pre className="whitespace-pre-wrap rounded-2xl border border-white/8 bg-black/20 px-4 py-3 text-sm leading-6 text-mist/88">{node.output}</pre>
+        </section>
+      ) : null}
 
       <section className="space-y-3 rounded-[28px] border border-white/8 bg-black/15 p-4">
         <div className="flex items-center justify-between gap-3">

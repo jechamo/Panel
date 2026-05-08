@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     app_name: str = "Panel Backend"
     app_version: str = "0.1.0"
     app_env: str = "development"
+    anthropic_api_key: str = ""
     host: str = "127.0.0.1"
     port: int = 8000
     cors_origins: list[str] = ["http://127.0.0.1:5173", "http://localhost:5173"]
