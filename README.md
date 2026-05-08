@@ -20,6 +20,7 @@ La Fase 2 deja operativo el backend y el scaffold visual del frontend.
 5. Verifica que la cabecera del frontend muestra el estado de conexion con el backend en verde o rojo.
 6. Haz click en un nodo del canvas para abrir el panel lateral y editar su configuracion en memoria.
 7. Usa los botones Guardar y Cargar para persistir flujos en `backend/storage/flows/`.
+8. En un nodo Microservicio, pulsa `Run` para ejecutar la request y revisar su salida JSON en el panel.
 
 ## Referencias
 

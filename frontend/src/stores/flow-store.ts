@@ -14,6 +14,7 @@ import type {
   AgentNodeData,
   FlowDocument,
   FlowPayload,
+  JsonValue,
   MicroserviceNodeConfig,
   MicroserviceNodeData,
   NodeKind,
@@ -32,6 +33,7 @@ type FlowState = {
   loadFlow: (flow: FlowDocument) => void;
   selectNode: (nodeId: string | null) => void;
   setCurrentFlowMeta: (flowId: string | null, name: string) => void;
+  setNodeRuntimeState: (nodeId: string, status: WorkflowNodeData['status'], output: JsonValue | null, lastError: string | null) => void;
   onConnect: (connection: Connection) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onNodesChange: (changes: NodeChange<WorkflowNode>[]) => void;
@@ -42,6 +44,8 @@ const agentTemplate: Omit<AgentNodeData, 'status'> = {
   kind: 'agent',
   title: 'Agente',
   description: 'Prompt estructurado y salida reusable.',
+  lastError: null,
+  output: null,
   config: {
     systemPrompt: '',
     userPrompt: '',
@@ -61,6 +65,8 @@ const microserviceTemplate: Omit<MicroserviceNodeData, 'status'> = {
   kind: 'microservice',
   title: 'Microservicio',
   description: 'Endpoint HTTP con entrada y salida JSON.',
+  lastError: null,
+  output: null,
   config: {
     endpoint: '',
     method: 'POST',
@@ -145,6 +151,22 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     })),
   selectNode: (nodeId) => set(() => ({ selectedNodeId: nodeId })),
   setCurrentFlowMeta: (flowId, name) => set(() => ({ currentFlowId: flowId, currentFlowName: name })),
+  setNodeRuntimeState: (nodeId, status, output, lastError) =>
+    set((state) => ({
+      nodes: state.nodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                status,
+                output,
+                lastError,
+              },
+            }
+          : node,
+      ),
+    })),
   onConnect: (connection) =>
     set((state) => ({
       edges: addEdge(

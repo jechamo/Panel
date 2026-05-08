@@ -51,6 +51,7 @@ export function NodeConfigPanel() {
         ) : (
           <MicroserviceConfigForm
             node={selectedNode.data}
+            nodeId={selectedNode.id}
             onChange={(nextNode) => updateNodeData(selectedNode.id, () => nextNode)}
           />
         )}

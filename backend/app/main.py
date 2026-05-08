@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.flows import router as flows_router
+from app.api.nodes import router as nodes_router
 from app.core.settings import get_settings
 from app.models.health import HealthResponse
 
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(flows_router)
+app.include_router(nodes_router)
 
 
 @app.get("/health", response_model=HealthResponse)

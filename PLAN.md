@@ -176,7 +176,7 @@ Endpoints POST /flows, GET /flows, GET /flows/{id}, PUT /flows/{id}, DELETE /flo
 
 - 2026-05-08
 
-## [ ] Fase 6 - Ejecutor de Microservicio
+## [x] Fase 6 - Ejecutor de Microservicio
 
 **Descripcion**
 
@@ -198,6 +198,10 @@ Endpoint POST /nodes/{id}/run para nodo de tipo microservicio. Hace la llamada H
 - frontend/src/components/panels/*
 - frontend/src/components/ui/*
 - frontend/src/lib/*
+
+**Fecha completada**
+
+- 2026-05-08
 
 ## [ ] Fase 7 - Ejecutor de Agente (proveedor unico: Anthropic)
 

@@ -3,6 +3,8 @@ import type { Edge, Node } from '@xyflow/react';
 export type NodeKind = 'agent' | 'microservice';
 export type NodeStatus = 'idle' | 'running' | 'success' | 'error';
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
+export type JsonObject = { [key: string]: JsonValue };
 
 export type AttachmentReference = {
   id: string;
@@ -41,6 +43,8 @@ type BaseWorkflowNodeData = {
   title: string;
   description: string;
   status: NodeStatus;
+  lastError: string | null;
+  output: JsonValue | null;
 };
 
 export type AgentNodeData = BaseWorkflowNodeData & {

@@ -1,14 +1,19 @@
+import { runMicroserviceNode } from '../../lib/api';
+import { JsonViewer } from '../ui/json-viewer';
+import { useFlowStore } from '../../stores/flow-store';
 import type { MicroserviceNodeData } from '../../lib/types';
 
 const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;
 
 type MicroserviceConfigFormProps = {
+  nodeId: string;
   node: MicroserviceNodeData;
   onChange: (nextNode: MicroserviceNodeData) => void;
 };
 
-export function MicroserviceConfigForm({ node, onChange }: MicroserviceConfigFormProps) {
+export function MicroserviceConfigForm({ node, nodeId, onChange }: MicroserviceConfigFormProps) {
   const { config } = node;
+  const setNodeRuntimeState = useFlowStore((state) => state.setNodeRuntimeState);
 
   const updateConfig = (nextConfig: MicroserviceNodeData['config']) => {
     onChange({
@@ -17,8 +22,36 @@ export function MicroserviceConfigForm({ node, onChange }: MicroserviceConfigFor
     });
   };
 
+  const handleRun = async () => {
+    setNodeRuntimeState(nodeId, 'running', null, null);
+
+    try {
+      const result = await runMicroserviceNode(nodeId, config);
+      setNodeRuntimeState(nodeId, 'success', result.output, null);
+    }
+    catch (error) {
+      setNodeRuntimeState(
+        nodeId,
+        'error',
+        null,
+        error instanceof Error ? error.message : 'No se pudo ejecutar el microservicio.',
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <button
+          className="rounded-full border border-ember/35 bg-ember/18 px-4 py-2 text-sm font-medium text-white transition hover:bg-ember/28"
+          onClick={() => void handleRun()}
+          type="button"
+        >
+          {node.status === 'running' ? 'Ejecutando...' : 'Run'}
+        </button>
+        <span className="text-xs uppercase tracking-[0.24em] text-mist/45">Estado: {node.status}</span>
+      </div>
+
       <section className="space-y-3">
         <div>
           <label className="text-xs uppercase tracking-[0.24em] text-mist/45">Endpoint</label>
@@ -135,6 +168,24 @@ export function MicroserviceConfigForm({ node, onChange }: MicroserviceConfigFor
           />
         </div>
       </section>
+
+      {node.lastError ? (
+        <section className="rounded-[28px] border border-ember/20 bg-ember/10 p-4">
+          <p className="text-xs uppercase tracking-[0.24em] text-ember/75">Error</p>
+          <p className="mt-2 text-sm leading-6 text-ember">{node.lastError}</p>
+        </section>
+      ) : null}
+
+      {node.output ? (
+        <section className="space-y-3 rounded-[28px] border border-moss/20 bg-moss/10 p-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-moss/80">Output</p>
+            <p className="mt-1 text-sm text-mist/70">Respuesta JSON del microservicio.</p>
+          </div>
+
+          <JsonViewer data={node.output} />
+        </section>
+      ) : null}
     </div>
   );
 }

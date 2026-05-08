@@ -43,6 +43,18 @@ export function WorkflowNode({ data, selected }: NodeProps<WorkflowNode>) {
         <span>{data.kind === 'agent' ? `${data.config.outputFields.length} campos` : `${data.config.headers.length} headers`}</span>
       </div>
 
+      {data.kind === 'microservice' && data.output ? (
+        <div className="mt-3 rounded-2xl border border-moss/20 bg-moss/10 px-3 py-2 text-xs text-moss">
+          Output JSON listo
+        </div>
+      ) : null}
+
+      {data.lastError ? (
+        <div className="mt-3 rounded-2xl border border-ember/20 bg-ember/10 px-3 py-2 text-xs text-ember">
+          {data.lastError}
+        </div>
+      ) : null}
+
       <Handle className="!h-3 !w-3 !border-0 !bg-ember" position={Position.Bottom} type="source" />
     </div>
   );

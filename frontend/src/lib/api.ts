@@ -1,4 +1,4 @@
-import type { FlowDocument, FlowPayload, FlowSummary } from './types';
+import type { FlowDocument, FlowPayload, FlowSummary, JsonValue, MicroserviceNodeConfig } from './types';
 
 export type HealthResponse = {
   ok: boolean;
@@ -7,6 +7,11 @@ export type HealthResponse = {
 export type ApiError = {
   code: string;
   message: string;
+};
+
+export type MicroserviceRunResult = {
+  output: JsonValue;
+  status_code: number;
 };
 
 type ApiEnvelope<T> = {
@@ -89,5 +94,18 @@ export async function updateFlow(flow: FlowDocument): Promise<FlowDocument> {
   return requestEnvelope<FlowDocument>(`/flows/${flow.id}`, {
     method: 'PUT',
     body: JSON.stringify(flow),
+  });
+}
+
+export async function runMicroserviceNode(
+  nodeId: string,
+  config: MicroserviceNodeConfig,
+): Promise<MicroserviceRunResult> {
+  return requestEnvelope<MicroserviceRunResult>(`/nodes/${nodeId}/run`, {
+    method: 'POST',
+    body: JSON.stringify({
+      kind: 'microservice',
+      config,
+    }),
   });
 }

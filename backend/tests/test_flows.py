@@ -21,7 +21,12 @@ def test_flow_crud_cycle(tmp_path: Path, monkeypatch) -> None:
                     'id': 'node-1',
                     'type': 'workflow',
                     'position': {'x': 120, 'y': 140},
-                    'data': {'kind': 'agent', 'title': 'Agente', 'description': 'Demo', 'status': 'idle'},
+                    'data': {
+                        'kind': 'agent',
+                        'title': 'Agente',
+                        'description': 'Demo',
+                        'status': 'idle',
+                    },
                 }
             ],
             'edges': [],
