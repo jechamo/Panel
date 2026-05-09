@@ -19,6 +19,12 @@ export type RunResult = {
   error?: string;
   duration_ms: number;
 };
+export type Variable = {
+  path: string;
+  placeholder: string;
+  source: "cached" | "schema" | "node";
+  sample?: string | null;
+};
 
 const j = (r: Response) => {
   if (!r.ok) return r.text().then((t) => Promise.reject(new Error(t || r.statusText)));
@@ -57,6 +63,18 @@ export const api = {
     fd.append("file", file);
     return fetch("/api/files/upload", { method: "POST", body: fd }).then(j);
   },
+
+  variables: (
+    nodes: any[],
+    edges: any[],
+    last_outputs: Record<string, any>,
+    node_id: string
+  ): Promise<{ variables: Variable[] }> =>
+    fetch("/api/introspect/variables", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nodes, edges, last_outputs, node_id }),
+    }).then(j),
 
   run: (graph: any, node_id?: string): Promise<{ results: RunResult[] }> =>
     fetch("/api/run", {

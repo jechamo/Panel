@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, type ProviderSpec } from "../../api/client";
 import { useFlowStore, type AgentConfig as AC } from "../../store/flow";
+import VariablesPicker, { trackFocus } from "./VariablesPicker";
 
 export default function AgentConfigPanel({ nodeId }: { nodeId: string }) {
   const node = useFlowStore((s) => s.nodes.find((n) => n.id === nodeId));
@@ -69,10 +70,13 @@ export default function AgentConfigPanel({ nodeId }: { nodeId: string }) {
         </div>
       </div>
 
+      <VariablesPicker nodeId={nodeId} />
+
       <div className="field">
         <label>System prompt</label>
         <textarea
           value={cfg.system_prompt}
+          onFocus={(e) => trackFocus(e.currentTarget)}
           onChange={(e) => update(nodeId, { system_prompt: e.target.value })}
         />
       </div>
@@ -82,6 +86,7 @@ export default function AgentConfigPanel({ nodeId }: { nodeId: string }) {
         <textarea
           rows={6}
           value={cfg.user_prompt}
+          onFocus={(e) => trackFocus(e.currentTarget)}
           onChange={(e) => update(nodeId, { user_prompt: e.target.value })}
           placeholder="Reference upstream nodes with {{nodeId.fieldName}}"
         />

@@ -1,4 +1,5 @@
 import { useFlowStore, type MicroserviceConfig as MC } from "../../store/flow";
+import VariablesPicker, { trackFocus } from "./VariablesPicker";
 
 const METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
 
@@ -40,11 +41,14 @@ export default function MicroserviceConfigPanel({ nodeId }: { nodeId: string }) 
           <label>URL</label>
           <input
             value={cfg.url}
+            onFocus={(e) => trackFocus(e.currentTarget)}
             onChange={(e) => update(nodeId, { url: e.target.value })}
             placeholder="https://api.example.com/v1/items"
           />
         </div>
       </div>
+
+      <VariablesPicker nodeId={nodeId} />
 
       <div className="field headers">
         <label>Headers</label>
@@ -95,6 +99,7 @@ export default function MicroserviceConfigPanel({ nodeId }: { nodeId: string }) 
           <textarea
             rows={6}
             value={cfg.body}
+            onFocus={(e) => trackFocus(e.currentTarget)}
             onChange={(e) => update(nodeId, { body: e.target.value })}
             placeholder='{"key": "{{upstream.value}}"}'
           />
