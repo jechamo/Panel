@@ -2,26 +2,14 @@ import json
 from pathlib import Path
 from typing import Any
 
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from ..db import UPLOADS_DIR
 from ..llm import call_llm
+from ..llm.schema import build_output_schema
 from ..parsers import extract_text
 from .templating import render
-
-
-def _build_output_schema(fields: list[dict[str, str]]) -> str:
-    """Render a description of the expected JSON output for the prompt."""
-    if not fields:
-        return ""
-    lines = ["Return a JSON object with exactly these fields:"]
-    for f in fields:
-        name = f.get("name", "").strip()
-        desc = f.get("description", "").strip()
-        if not name:
-            continue
-        lines.append(f'  - "{name}": {desc or "(no description)"}')
-    return "\n".join(lines)
 
 
 def _read_attachments(attachments: list[dict[str, Any]]) -> str:
@@ -75,6 +63,18 @@ def _parse_json_loose(text: str) -> Any:
     return None
 
 
+def _schema_hint_for_prompt(schema: dict[str, Any]) -> str:
+    """Render a human-readable description of the JSON schema for prompt-only providers."""
+    props = schema.get("properties", {}) or {}
+    if not props:
+        return ""
+    lines = ["Return a JSON object with exactly these fields:"]
+    for name, spec in props.items():
+        desc = spec.get("description", "")
+        lines.append(f'  - "{name}" (string): {desc or "(no description)"}')
+    return "\n".join(lines)
+
+
 def run_agent(db: Session, config: dict[str, Any], context: dict[str, Any]) -> Any:
     provider = config.get("provider", "anthropic")
     model = config.get("model") or ""
@@ -87,23 +87,52 @@ def run_agent(db: Session, config: dict[str, Any], context: dict[str, Any]) -> A
     if attachment_text:
         user = f"{user}\n\n=== Attachments ===\n{attachment_text}"
 
-    schema_hint = _build_output_schema(fields)
-    json_mode = bool(fields)
-    if schema_hint:
-        system = f"{system}\n\n{schema_hint}".strip()
+    if not fields:
+        # Free-text mode: no schema, no validation.
+        response = call_llm(
+            db=db,
+            provider=provider,
+            model=model,
+            system=system,
+            user=user,
+            json_mode=False,
+            output_schema=None,
+        )
+        return {"text": response.text}
+
+    # Structured mode: build schema, ask provider for native structured output,
+    # validate the result.
+    try:
+        validation_model, json_schema = build_output_schema(fields)
+    except ValueError as e:
+        return {"_error": f"Invalid output_fields configuration: {e}"}
+
+    # Always include the prompt-style hint in the system prompt as a safety net
+    # for providers that fall back to plain JSON mode.
+    hint = _schema_hint_for_prompt(json_schema)
+    system_with_hint = (system + ("\n\n" + hint if hint else "")).strip()
 
     response = call_llm(
         db=db,
         provider=provider,
         model=model,
-        system=system,
+        system=system_with_hint,
         user=user,
-        json_mode=json_mode,
+        json_mode=True,
+        output_schema=json_schema,
     )
 
-    if json_mode:
-        parsed = _parse_json_loose(response.text)
-        if parsed is None:
-            return {"_raw": response.text, "_error": "Model did not return valid JSON"}
-        return parsed
-    return {"text": response.text}
+    parsed = _parse_json_loose(response.text)
+    if parsed is None:
+        return {
+            "_raw": response.text,
+            "_error": "Model did not return valid JSON",
+        }
+    try:
+        validated = validation_model.model_validate(parsed)
+    except ValidationError as e:
+        return {
+            "_raw": parsed,
+            "_error": f"Output did not match the declared schema: {e.errors()[:3]}",
+        }
+    return validated.model_dump(by_alias=True)
