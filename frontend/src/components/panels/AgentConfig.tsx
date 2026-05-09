@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, type ProviderSpec } from "../../api/client";
 import { useFlowStore, type AgentConfig as AC } from "../../store/flow";
+import RunLogs from "./RunLogs";
 import VariablesPicker, { trackFocus } from "./VariablesPicker";
 
 export default function AgentConfigPanel({ nodeId }: { nodeId: string }) {
@@ -176,6 +177,8 @@ export default function AgentConfigPanel({ nodeId }: { nodeId: string }) {
       </div>
 
       <NodeOutput nodeId={nodeId} />
+
+      <RunLogs nodeId={nodeId} />
 
       <div style={{ marginTop: 16 }}>
         <button className="danger" onClick={() => removeNode(nodeId)}>

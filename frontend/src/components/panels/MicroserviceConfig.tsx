@@ -1,4 +1,5 @@
 import { useFlowStore, type MicroserviceConfig as MC } from "../../store/flow";
+import RunLogs from "./RunLogs";
 import VariablesPicker, { trackFocus } from "./VariablesPicker";
 
 const METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
@@ -128,6 +129,8 @@ export default function MicroserviceConfigPanel({ nodeId }: { nodeId: string }) 
       </div>
 
       <NodeOutput nodeId={nodeId} />
+
+      <RunLogs nodeId={nodeId} />
 
       <div style={{ marginTop: 16 }}>
         <button className="danger" onClick={() => removeNode(nodeId)}>

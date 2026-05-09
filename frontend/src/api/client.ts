@@ -19,6 +19,19 @@ export type RunResult = {
   error?: string;
   duration_ms: number;
 };
+export type NodeRunLog = {
+  id: number;
+  flow_id: number | null;
+  node_id: string;
+  node_kind: string;
+  status: "ok" | "error" | "skipped";
+  started_at: string;
+  finished_at: string;
+  duration_ms: number;
+  input: any;
+  output: any;
+  error: string | null;
+};
 export type Variable = {
   path: string;
   placeholder: string;
@@ -75,6 +88,9 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nodes, edges, last_outputs, node_id }),
     }).then(j),
+
+  listRuns: (node_id: string, limit = 10): Promise<NodeRunLog[]> =>
+    fetch(`/api/runs?node_id=${encodeURIComponent(node_id)}&limit=${limit}`).then(j),
 
   run: (graph: any, node_id?: string): Promise<{ results: RunResult[] }> =>
     fetch("/api/run", {
