@@ -126,6 +126,43 @@ El backend extrae el texto y lo concatena al user prompt antes de llamar al mode
 | **▶ Run all** (barra superior) | Orden topológico. Cada nodo recibe `{ <padre_id>: <output_padre> }`. Si un padre falla, los hijos quedan `skipped`. |
 | **▶ Run this node** (panel derecho) | Solo ese nodo, usando los outputs cacheados de sus padres (los que ya ejecutaste antes). Útil para iterar sobre el último nodo sin re-ejecutar todo. |
 
+## Encadenar y mapear outputs entre nodos
+
+Cualquier output (sea agente o microservicio) puede alimentar a cualquier
+otro nodo a través de placeholders en cualquier campo de texto:
+
+- En el panel del nodo destino, abre **Variables disponibles** (sección
+  arriba del prompt o de la URL).
+- Verás los nodos predecesores y sus campos. Click en uno → se inserta
+  `{{nodo.campo}}` en el último textarea/input que tuvieras enfocado.
+- Las variables vienen de:
+  - **cached**: shape real del último output del nodo padre (las más
+    fiables — ya las has visto ejecutar).
+  - **schema**: nombres declarados en `output_fields` de un agente
+    aguas arriba (aunque aún no se haya ejecutado).
+  - **node**: solo el ID, si aún no hay nada para inferir.
+- Combinaciones soportadas: agent→agent, agent→api, api→agent, api→api,
+  multi-padre (un nodo recibe outputs de varios padres).
+
+Sintaxis manual también disponible: `{{node-id.path.to.field}}` con
+profundidad arbitraria; `{{node-id.tags.0}}` para listas.
+
+## Entornos restringidos / banca
+
+Si tu entorno tiene la red filtrada, no permite instalar paquetes
+externos, o requiere proxies/CAs corporativos:
+
+- Lee [`OFFLINE_INSTALL.md`](OFFLINE_INSTALL.md) para la instalación
+  aire-gap (vendor de wheels, npm offline cache, mirrors internos).
+- Lee [`BANKING_DEPLOYMENT.md`](BANKING_DEPLOYMENT.md) para la matriz
+  de proveedores LLM, cómo elegir entre Copilot CLI, Azure OpenAI,
+  gateways internos, y cómo restringir el catálogo en `models.json`.
+
+Resumen: si tu banco tiene `gh` autorizado, el provider más rápido de
+configurar es **Copilot CLI** (no requiere pegar API keys, reusa la
+auth de la CLI). Para Azure OpenAI corporativo, configura los 4 campos
+del provider `Azure OpenAI` en Settings.
+
 ## Solución de problemas
 
 **El frontend no recibe respuestas / errores CORS**
