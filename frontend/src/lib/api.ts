@@ -1,204 +1,204 @@
 import type {
-  AgentNodeConfig,
-  AttachmentReference,
-  FlowDocument,
-  FlowPayload,
-  FlowSummary,
-  JsonValue,
-  NodeRunLog,
-  SettingsSnapshot,
-  SettingsUpdatePayload,
-  MicroserviceNodeConfig,
+    AgentNodeConfig,
+    AttachmentReference,
+    FlowDocument,
+    FlowPayload,
+    FlowSummary,
+    JsonValue,
+    NodeRunLog,
+    SettingsSnapshot,
+    SettingsUpdatePayload,
+    MicroserviceNodeConfig,
 } from './types';
 
 export type HealthResponse = {
-  ok: boolean;
+    ok: boolean;
 };
 
 export type ApiError = {
-  code: string;
-  message: string;
+    code: string;
+    message: string;
 };
 
 export type MicroserviceRunResult = {
-  output: JsonValue;
-  status_code: number;
+    output: JsonValue;
+    status_code: number;
 };
 
 export type AgentRunResult = {
-  output: JsonValue;
-  status_code: number;
+    output: JsonValue;
+    status_code: number;
 };
 
 type NodeExecutionContext = {
-  flowId?: string | null;
-  input?: JsonValue;
+    flowId?: string | null;
+    input?: JsonValue;
 };
 
 type ApiEnvelope<T> = {
-  ok: boolean;
-  data: T;
-  error: ApiError | null;
+    ok: boolean;
+    data: T;
+    error: ApiError | null;
 };
 
 const DEFAULT_API_BASE_URL = 'http://127.0.0.1:8000';
 
 function getApiBaseUrl(): string {
-  const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  return configuredBaseUrl && configuredBaseUrl.length > 0
-    ? configuredBaseUrl
-    : DEFAULT_API_BASE_URL;
+    return configuredBaseUrl && configuredBaseUrl.length > 0
+        ? configuredBaseUrl
+        : DEFAULT_API_BASE_URL;
 }
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${getApiBaseUrl()}${path}`, {
-    ...init,
-    headers: {
-      Accept: 'application/json',
-      ...(init?.headers ?? {}),
-    },
-  });
+    const response = await fetch(`${getApiBaseUrl()}${path}`, {
+        ...init,
+        headers: {
+            Accept: 'application/json',
+            ...(init?.headers ?? {}),
+        },
+    });
 
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`);
-  }
+    if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+    }
 
-  return (await response.json()) as T;
+    return (await response.json()) as T;
 }
 
 export async function getHealth(): Promise<HealthResponse> {
-  return requestJson<HealthResponse>('/health');
+    return requestJson<HealthResponse>('/health');
 }
 
 async function requestEnvelope<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${getApiBaseUrl()}${path}`, {
-    ...init,
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-  });
+    const response = await fetch(`${getApiBaseUrl()}${path}`, {
+        ...init,
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            ...(init?.headers ?? {}),
+        },
+    });
 
-  const payload = (await response.json()) as ApiEnvelope<T>;
+    const payload = (await response.json()) as ApiEnvelope<T>;
 
-  if (!response.ok || !payload.ok) {
-    throw new Error(payload.error?.message ?? `Request failed with status ${response.status}`);
-  }
+    if (!response.ok || !payload.ok) {
+        throw new Error(payload.error?.message ?? `Request failed with status ${response.status}`);
+    }
 
-  return payload.data;
+    return payload.data;
 }
 
 export async function createFlow(flow: FlowPayload): Promise<FlowDocument> {
-  return requestEnvelope<FlowDocument>('/flows', {
-    method: 'POST',
-    body: JSON.stringify(flow),
-  });
+    return requestEnvelope<FlowDocument>('/flows', {
+        method: 'POST',
+        body: JSON.stringify(flow),
+    });
 }
 
 export async function deleteFlow(flowId: string): Promise<void> {
-  await requestEnvelope<{ deleted: true; id: string }>(`/flows/${flowId}`, {
-    method: 'DELETE',
-  });
+    await requestEnvelope<{ deleted: true; id: string }>(`/flows/${flowId}`, {
+        method: 'DELETE',
+    });
 }
 
 export async function getFlow(flowId: string): Promise<FlowDocument> {
-  return requestEnvelope<FlowDocument>(`/flows/${flowId}`);
+    return requestEnvelope<FlowDocument>(`/flows/${flowId}`);
 }
 
 export async function runFlow(flowId: string): Promise<FlowDocument> {
-  return requestEnvelope<FlowDocument>(`/flows/${flowId}/run`, {
-    method: 'POST',
-  });
+    return requestEnvelope<FlowDocument>(`/flows/${flowId}/run`, {
+        method: 'POST',
+    });
 }
 
 export async function listFlows(): Promise<FlowSummary[]> {
-  return requestEnvelope<FlowSummary[]>('/flows');
+    return requestEnvelope<FlowSummary[]>('/flows');
 }
 
 export async function updateFlow(flow: FlowDocument): Promise<FlowDocument> {
-  return requestEnvelope<FlowDocument>(`/flows/${flow.id}`, {
-    method: 'PUT',
-    body: JSON.stringify(flow),
-  });
+    return requestEnvelope<FlowDocument>(`/flows/${flow.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(flow),
+    });
 }
 
 export async function listNodeRuns(
-  nodeId: string,
-  flowId?: string | null,
+    nodeId: string,
+    flowId?: string | null,
 ): Promise<NodeRunLog[]> {
-  const searchParams = new URLSearchParams({ nodeId });
-  if (flowId) {
-    searchParams.set('flowId', flowId);
-  }
+    const searchParams = new URLSearchParams({ nodeId });
+    if (flowId) {
+        searchParams.set('flowId', flowId);
+    }
 
-  return requestEnvelope<NodeRunLog[]>(`/runs?${searchParams.toString()}`);
+    return requestEnvelope<NodeRunLog[]>(`/runs?${searchParams.toString()}`);
 }
 
 export async function getSettingsSnapshot(): Promise<SettingsSnapshot> {
-  return requestEnvelope<SettingsSnapshot>('/settings');
+    return requestEnvelope<SettingsSnapshot>('/settings');
 }
 
 export async function updateSettingsSnapshot(
-  payload: SettingsUpdatePayload,
+    payload: SettingsUpdatePayload,
 ): Promise<SettingsSnapshot> {
-  return requestEnvelope<SettingsSnapshot>('/settings', {
-    method: 'PUT',
-    body: JSON.stringify(payload),
-  });
+    return requestEnvelope<SettingsSnapshot>('/settings', {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+    });
 }
 
 export async function runMicroserviceNode(
-  nodeId: string,
-  config: MicroserviceNodeConfig,
-  context?: NodeExecutionContext,
+    nodeId: string,
+    config: MicroserviceNodeConfig,
+    context?: NodeExecutionContext,
 ): Promise<MicroserviceRunResult> {
-  return requestEnvelope<MicroserviceRunResult>(`/nodes/${nodeId}/run`, {
-    method: 'POST',
-    body: JSON.stringify({
-      kind: 'microservice',
-      config,
-      context,
-    }),
-  });
+    return requestEnvelope<MicroserviceRunResult>(`/nodes/${nodeId}/run`, {
+        method: 'POST',
+        body: JSON.stringify({
+            kind: 'microservice',
+            config,
+            context,
+        }),
+    });
 }
 
 export async function runAgentNode(
-  nodeId: string,
-  config: AgentNodeConfig,
-  context?: NodeExecutionContext,
+    nodeId: string,
+    config: AgentNodeConfig,
+    context?: NodeExecutionContext,
 ): Promise<AgentRunResult> {
-  return requestEnvelope<AgentRunResult>(`/nodes/${nodeId}/run`, {
-    method: 'POST',
-    body: JSON.stringify({
-      kind: 'agent',
-      config: {
-        model: config.model,
-        outputFields: config.outputFields,
-        systemPrompt: config.systemPrompt,
-        userPrompt: config.userPrompt,
-      },
-      context,
-    }),
-  });
+    return requestEnvelope<AgentRunResult>(`/nodes/${nodeId}/run`, {
+        method: 'POST',
+        body: JSON.stringify({
+            kind: 'agent',
+            config: {
+                model: config.model,
+                outputFields: config.outputFields,
+                systemPrompt: config.systemPrompt,
+                userPrompt: config.userPrompt,
+            },
+            context,
+        }),
+    });
 }
 
 export async function uploadAttachment(flowId: string, file: File): Promise<AttachmentReference> {
-  const formData = new FormData();
-  formData.append('flow_id', flowId);
-  formData.append('file', file);
+    const formData = new FormData();
+    formData.append('flow_id', flowId);
+    formData.append('file', file);
 
-  const response = await fetch(`${getApiBaseUrl()}/files/upload`, {
-    method: 'POST',
-    body: formData,
-  });
+    const response = await fetch(`${getApiBaseUrl()}/files/upload`, {
+        method: 'POST',
+        body: formData,
+    });
 
-  const payload = (await response.json()) as ApiEnvelope<AttachmentReference>;
+    const payload = (await response.json()) as ApiEnvelope<AttachmentReference>;
 
-  if (!response.ok || !payload.ok) {
-    throw new Error(payload.error?.message ?? `Request failed with status ${response.status}`);
-  }
+    if (!response.ok || !payload.ok) {
+        throw new Error(payload.error?.message ?? `Request failed with status ${response.status}`);
+    }
 
-  return payload.data;
+    return payload.data;
 }

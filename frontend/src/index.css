@@ -5,49 +5,49 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
-  font-family: 'Segoe UI', 'Inter', sans-serif;
-  background: #090d13;
+    color-scheme: dark;
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+    background: #090d13;
 }
 
 html,
 body,
 #root {
-  min-height: 100%;
-  margin: 0;
+    min-height: 100%;
+    margin: 0;
 }
 
 body {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(88, 196, 221, 0.18), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(255, 140, 66, 0.16), transparent 28%),
-    #090d13;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top, rgba(88, 196, 221, 0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(255, 140, 66, 0.16), transparent 28%),
+        #090d13;
 }
 
 button {
-  font: inherit;
+    font: inherit;
 }
 
 .react-flow__attribution {
-  display: none;
+    display: none;
 }
 
 .react-flow__controls {
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 14px 32px rgba(8, 15, 30, 0.35);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 32px rgba(8, 15, 30, 0.35);
 }
 
 .react-flow__controls-button {
-  background: rgba(10, 14, 22, 0.9);
-  color: #d8e0ee;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(10, 14, 22, 0.9);
+    color: #d8e0ee;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .react-flow__minimap {
-  background: rgba(9, 13, 19, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+    background: rgba(9, 13, 19, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
 }

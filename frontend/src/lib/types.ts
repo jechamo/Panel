@@ -7,57 +7,57 @@ export type JsonValue = string | number | boolean | null | JsonObject | JsonValu
 export type JsonObject = { [key: string]: JsonValue };
 
 export type AttachmentReference = {
-  id: string;
-  flowId: string;
-  mimeType: string;
-  name: string;
-  storedName: string;
-  variableName: string;
+    id: string;
+    flowId: string;
+    mimeType: string;
+    name: string;
+    storedName: string;
+    variableName: string;
 };
 
 export type OutputField = {
-  id: string;
-  name: string;
-  description: string;
+    id: string;
+    name: string;
+    description: string;
 };
 
 export type HeaderField = {
-  id: string;
-  key: string;
-  value: string;
+    id: string;
+    key: string;
+    value: string;
 };
 
 export type AgentNodeConfig = {
-  systemPrompt: string;
-  userPrompt: string;
-  attachments: AttachmentReference[];
-  outputFields: OutputField[];
-  model: string;
+    systemPrompt: string;
+    userPrompt: string;
+    attachments: AttachmentReference[];
+    outputFields: OutputField[];
+    model: string;
 };
 
 export type MicroserviceNodeConfig = {
-  endpoint: string;
-  method: HttpMethod;
-  headers: HeaderField[];
-  payload: string;
+    endpoint: string;
+    method: HttpMethod;
+    headers: HeaderField[];
+    payload: string;
 };
 
 type BaseWorkflowNodeData = {
-  title: string;
-  description: string;
-  status: NodeStatus;
-  lastError: string | null;
-  output: JsonValue | null;
+    title: string;
+    description: string;
+    status: NodeStatus;
+    lastError: string | null;
+    output: JsonValue | null;
 };
 
 export type AgentNodeData = BaseWorkflowNodeData & {
-  kind: 'agent';
-  config: AgentNodeConfig;
+    kind: 'agent';
+    config: AgentNodeConfig;
 };
 
 export type MicroserviceNodeData = BaseWorkflowNodeData & {
-  kind: 'microservice';
-  config: MicroserviceNodeConfig;
+    kind: 'microservice';
+    config: MicroserviceNodeConfig;
 };
 
 export type WorkflowNodeData = AgentNodeData | MicroserviceNodeData;
@@ -66,52 +66,52 @@ export type WorkflowNode = Node<WorkflowNodeData, 'workflow'>;
 export type WorkflowEdge = Edge;
 
 export type FlowPayload = {
-  name: string;
-  nodes: WorkflowNode[];
-  edges: WorkflowEdge[];
-  version: 1;
+    name: string;
+    nodes: WorkflowNode[];
+    edges: WorkflowEdge[];
+    version: 1;
 };
 
 export type FlowDocument = FlowPayload & {
-  id: string;
+    id: string;
 };
 
 export type FlowSummary = {
-  id: string;
-  name: string;
-  version: 1;
+    id: string;
+    name: string;
+    version: 1;
 };
 
 export type ProviderId = 'anthropic' | 'openai' | 'gemini';
 
 export type ModelOption = {
-  id: string;
-  label: string;
-  provider: ProviderId;
+    id: string;
+    label: string;
+    provider: ProviderId;
 };
 
 export type SettingsSnapshot = {
-  anthropicConfigured: boolean;
-  openaiConfigured: boolean;
-  geminiConfigured: boolean;
-  models: ModelOption[];
+    anthropicConfigured: boolean;
+    openaiConfigured: boolean;
+    geminiConfigured: boolean;
+    models: ModelOption[];
 };
 
 export type SettingsUpdatePayload = {
-  anthropicApiKey?: string;
-  openaiApiKey?: string;
-  geminiApiKey?: string;
+    anthropicApiKey?: string;
+    openaiApiKey?: string;
+    geminiApiKey?: string;
 };
 
 export type NodeRunLog = {
-  id: string;
-  flowId: string | null;
-  nodeId: string;
-  nodeKind: 'agent' | 'microservice';
-  status: 'success' | 'error';
-  startedAt: string;
-  finishedAt: string;
-  input: JsonValue;
-  output: JsonValue;
-  error: string | null;
+    id: string;
+    flowId: string | null;
+    nodeId: string;
+    nodeKind: 'agent' | 'microservice';
+    status: 'success' | 'error';
+    startedAt: string;
+    finishedAt: string;
+    input: JsonValue;
+    output: JsonValue;
+    error: string | null;
 };
