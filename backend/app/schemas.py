@@ -38,6 +38,7 @@ class SettingsView(BaseModel):
     openai_api_key: bool = False
     gemini_api_key: bool = False
     github_token: bool = False
+    present: dict[str, bool] = Field(default_factory=dict)
 
 
 class RunRequest(BaseModel):

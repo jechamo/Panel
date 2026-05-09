@@ -4,7 +4,12 @@ from .base import LLMResponse, _get_secret
 
 
 def call_anthropic(
-    db: Session, model: str, system: str, user: str, json_mode: bool
+    db: Session,
+    model: str,
+    system: str,
+    user: str,
+    json_mode: bool,
+    output_schema: dict | None = None,
 ) -> LLMResponse:
     from anthropic import Anthropic
 

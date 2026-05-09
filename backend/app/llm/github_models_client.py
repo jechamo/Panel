@@ -4,7 +4,12 @@ from .base import LLMResponse, _get_secret
 
 
 def call_github_models(
-    db: Session, model: str, system: str, user: str, json_mode: bool
+    db: Session,
+    model: str,
+    system: str,
+    user: str,
+    json_mode: bool,
+    output_schema: dict | None = None,
 ) -> LLMResponse:
     """GitHub Models exposes an OpenAI-compatible API at the inference endpoint."""
     from openai import OpenAI
