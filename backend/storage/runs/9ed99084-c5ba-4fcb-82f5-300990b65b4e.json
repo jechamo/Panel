@@ -1,0 +1,14 @@
+{
+  "id": "9ed99084-c5ba-4fcb-82f5-300990b65b4e",
+  "flowId": "8c93aa56-08d2-4922-94e0-6d2438181a9a",
+  "nodeId": "node-1",
+  "nodeKind": "microservice",
+  "status": "success",
+  "startedAt": "2026-05-08T22:17:08.086653Z",
+  "finishedAt": "2026-05-08T22:17:08.088546Z",
+  "input": null,
+  "output": {
+    "slug": "alpha"
+  },
+  "error": null
+}

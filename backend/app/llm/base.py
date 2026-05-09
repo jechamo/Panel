@@ -48,6 +48,40 @@ FALLBACK_CATALOG: dict[str, dict] = {
         "default_model": "openai/gpt-4o-mini",
         "models": ["openai/gpt-4o", "openai/gpt-4o-mini"],
     },
+    "copilot_models": {
+        "label": "GitHub Models (gh auth)",
+        "secret_key": None,
+        "auth": "gh_cli",
+        "supports_base_url": False,
+        "structured_output": "json_schema",
+        "default_model": "openai/gpt-4o-mini",
+        "models": [
+            "openai/gpt-4o",
+            "openai/gpt-4o-mini",
+            "openai/gpt-5",
+            "openai/gpt-5-chat",
+            "openai/gpt-5-mini",
+            "openai/gpt-5-nano",
+        ],
+    },
+    "copilot_cli": {
+        "label": "Copilot CLI (local)",
+        "secret_key": None,
+        "auth": "external",
+        "supports_base_url": False,
+        "structured_output": "prompt",
+        "default_model": "gpt-5.4",
+        "models": [
+            "gpt-4.1",
+            "gpt-5-mini",
+            "gpt-5.2",
+            "gpt-5.4",
+            "gpt-5.4-mini",
+            "claude-sonnet-4.6",
+            "claude-haiku-4.5",
+        ],
+        "extra_fields": ["timeout_seconds"],
+    },
 }
 
 
@@ -118,6 +152,10 @@ def call_llm(
         from .copilot_models_client import call_copilot_models
 
         return call_copilot_models(db, model, system, user, json_mode, output_schema)
+    if provider == "copilot_cli":
+        from .copilot_cli_client import call_copilot_cli
+
+        return call_copilot_cli(db, model, system, user, json_mode, output_schema)
     if provider == "cli_subprocess":
         from .cli_subprocess_client import call_cli_subprocess
 

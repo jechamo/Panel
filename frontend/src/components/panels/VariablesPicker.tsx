@@ -7,23 +7,61 @@ import { useFlowStore } from "../../store/flow";
  * so click-to-insert knows where to insert the placeholder.
  */
 let lastFocused: HTMLTextAreaElement | HTMLInputElement | null = null;
+let lastInsertHandler:
+  | ((text: string, el: HTMLTextAreaElement | HTMLInputElement) => void)
+  | null = null;
 
-export function trackFocus(el: HTMLTextAreaElement | HTMLInputElement) {
-  lastFocused = el;
+export function buildInsertedValue(
+  el: HTMLTextAreaElement | HTMLInputElement,
+  text: string
+) {
+  const start = el.selectionStart ?? el.value.length;
+  const end = el.selectionEnd ?? el.value.length;
+  return {
+    nextValue: el.value.slice(0, start) + text + el.value.slice(end),
+    nextCaret: start + text.length,
+  };
 }
 
-function insertAtCursor(text: string) {
+export function trackFocus(
+  el: HTMLTextAreaElement | HTMLInputElement,
+  onInsert?: (text: string, el: HTMLTextAreaElement | HTMLInputElement) => void
+) {
+  lastFocused = el;
+  lastInsertHandler = onInsert ?? null;
+}
+
+export function insertPlaceholder(text: string) {
   const el = lastFocused;
   if (!el) {
     navigator.clipboard?.writeText(text).catch(() => {});
     return;
   }
-  const start = el.selectionStart ?? el.value.length;
-  const end = el.selectionEnd ?? el.value.length;
-  el.value = el.value.slice(0, start) + text + el.value.slice(end);
-  el.selectionStart = el.selectionEnd = start + text.length;
+  if (lastInsertHandler) {
+    lastInsertHandler(text, el);
+    return;
+  }
+  const { nextValue, nextCaret } = buildInsertedValue(el, text);
+  el.value = nextValue;
+  el.selectionStart = el.selectionEnd = nextCaret;
   el.dispatchEvent(new Event("input", { bubbles: true }));
   el.focus();
+}
+
+export async function loadVariablesForNode(nodeId: string): Promise<Variable[]> {
+  const { nodes, edges } = useFlowStore.getState();
+  const last_outputs: Record<string, any> = {};
+  for (const n of nodes) {
+    if (n.data.output !== undefined) last_outputs[n.id] = n.data.output;
+  }
+  const slimNodes = nodes.map((n) => ({
+    id: n.id,
+    type: n.type,
+    data: { config: n.data.config },
+  }));
+  const slimEdges = edges.map((e) => ({ source: e.source, target: e.target }));
+  const { variables } = await api.variables(slimNodes, slimEdges, last_outputs, nodeId);
+  return variables;
 }
 
 export default function VariablesPicker({ nodeId }: { nodeId: string }) {
@@ -32,21 +70,9 @@ export default function VariablesPicker({ nodeId }: { nodeId: string }) {
   const [loading, setLoading] = useState(false);
 
   const refresh = async () => {
-    const { nodes, edges } = useFlowStore.getState();
-    const last_outputs: Record<string, any> = {};
-    for (const n of nodes) {
-      if (n.data.output !== undefined) last_outputs[n.id] = n.data.output;
-    }
     setLoading(true);
     try {
-      const slimNodes = nodes.map((n) => ({
-        id: n.id,
-        type: n.type,
-        data: { config: n.data.config },
-      }));
-      const slimEdges = edges.map((e) => ({ source: e.source, target: e.target }));
-      const { variables } = await api.variables(slimNodes, slimEdges, last_outputs, nodeId);
-      setVars(variables);
+      setVars(await loadVariablesForNode(nodeId));
     } finally {
       setLoading(false);
     }
@@ -98,7 +124,7 @@ export default function VariablesPicker({ nodeId }: { nodeId: string }) {
               {items.map((v) => (
                 <div
                   key={v.path}
-                  onClick={() => insertAtCursor(v.placeholder)}
+                  onClick={() => insertPlaceholder(v.placeholder)}
                   title={v.sample || `source: ${v.source}`}
                   style={{
                     cursor: "pointer",

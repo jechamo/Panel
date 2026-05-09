@@ -102,7 +102,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
 
         {Object.entries(providers).map(([providerId, spec]) => {
           const fields = fieldsForProvider(providerId, spec);
-          const isCopilot = providerId === "copilot_models";
+          const isCopilot = providerId === "copilot_models" || providerId === "copilot_cli";
           if (fields.length === 0 && !isCopilot) return null;
           return (
             <fieldset

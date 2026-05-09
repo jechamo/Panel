@@ -110,7 +110,10 @@ def run_agent(db: Session, config: dict[str, Any], context: dict[str, Any]) -> A
     # Always include the prompt-style hint in the system prompt as a safety net
     # for providers that fall back to plain JSON mode.
     hint = _schema_hint_for_prompt(json_schema)
-    system_with_hint = (system + ("\n\n" + hint if hint else "")).strip()
+    if provider == "copilot_cli":
+        system_with_hint = system.strip()
+    else:
+        system_with_hint = (system + ("\n\n" + hint if hint else "")).strip()
 
     response = call_llm(
         db=db,

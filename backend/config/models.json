@@ -47,13 +47,23 @@
       "models": ["openai/gpt-4o", "openai/gpt-4o-mini"]
     },
     "copilot_models": {
-      "label": "Copilot CLI (gh auth)",
+      "label": "GitHub Models (gh auth)",
       "secret_key": null,
       "auth": "gh_cli",
       "supports_base_url": false,
       "structured_output": "json_schema",
       "default_model": "openai/gpt-4o-mini",
-      "models": ["openai/gpt-4o", "openai/gpt-4o-mini"]
+      "models": ["openai/gpt-4o", "openai/gpt-4o-mini", "openai/gpt-5", "openai/gpt-5-chat", "openai/gpt-5-mini", "openai/gpt-5-nano"]
+    },
+    "copilot_cli": {
+      "label": "Copilot CLI (local)",
+      "secret_key": null,
+      "auth": "external",
+      "supports_base_url": false,
+      "structured_output": "prompt",
+      "default_model": "gpt-5.4",
+      "models": ["gpt-4.1", "gpt-5-mini", "gpt-5.2", "gpt-5.4", "gpt-5.4-mini", "claude-sonnet-4.6", "claude-haiku-4.5"],
+      "extra_fields": ["timeout_seconds"]
     },
     "cli_subprocess": {
       "label": "CLI local (Claude / Copilot / ...)",

@@ -1,0 +1,20 @@
+{
+  "id": "db8f8527-ee71-4f7d-b827-befc7987013d",
+  "flowId": null,
+  "nodeId": "node-1",
+  "nodeKind": "microservice",
+  "status": "success",
+  "startedAt": "2026-05-08T22:17:08.071624Z",
+  "finishedAt": "2026-05-08T22:17:08.071812Z",
+  "input": {
+    "slug": "alpha",
+    "count": 3
+  },
+  "output": {
+    "ok": true,
+    "echo": {
+      "foo": "bar"
+    }
+  },
+  "error": null
+}

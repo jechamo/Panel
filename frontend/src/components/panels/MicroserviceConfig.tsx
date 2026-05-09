@@ -1,6 +1,6 @@
 import { useFlowStore, type MicroserviceConfig as MC } from "../../store/flow";
 import RunLogs from "./RunLogs";
-import VariablesPicker, { trackFocus } from "./VariablesPicker";
+import VariablesPicker, { buildInsertedValue, trackFocus } from "./VariablesPicker";
 
 const METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
 
@@ -52,7 +52,16 @@ export default function MicroserviceConfigPanel({ nodeId }: { nodeId: string }) 
           <label>URL</label>
           <input
             value={cfg.url}
-            onFocus={(e) => trackFocus(e.currentTarget)}
+            onFocus={(e) =>
+              trackFocus(e.currentTarget, (text, el) => {
+                const { nextValue, nextCaret } = buildInsertedValue(el, text);
+                update(nodeId, { url: nextValue });
+                queueMicrotask(() => {
+                  el.focus();
+                  el.selectionStart = el.selectionEnd = nextCaret;
+                });
+              })
+            }
             onChange={(e) => update(nodeId, { url: e.target.value })}
             placeholder="https://api.example.com/v1/items"
           />
@@ -110,7 +119,16 @@ export default function MicroserviceConfigPanel({ nodeId }: { nodeId: string }) 
           <textarea
             rows={6}
             value={cfg.body}
-            onFocus={(e) => trackFocus(e.currentTarget)}
+            onFocus={(e) =>
+              trackFocus(e.currentTarget, (text, el) => {
+                const { nextValue, nextCaret } = buildInsertedValue(el, text);
+                update(nodeId, { body: nextValue });
+                queueMicrotask(() => {
+                  el.focus();
+                  el.selectionStart = el.selectionEnd = nextCaret;
+                });
+              })
+            }
             onChange={(e) => update(nodeId, { body: e.target.value })}
             placeholder='{"key": "{{upstream.value}}"}'
           />
