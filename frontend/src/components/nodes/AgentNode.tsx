@@ -3,7 +3,7 @@ import type { AppNodeData } from "../../store/flow";
 
 type AgentN = Node<AppNodeData, "agent">;
 
-export default function AgentNode({ data, selected }: NodeProps<AgentN>) {
+export default function AgentNode({ id, data, selected }: NodeProps<AgentN>) {
   const d = data;
   const cfg = d.config as { provider: string; model: string; user_prompt: string };
   return (
@@ -14,6 +14,7 @@ export default function AgentNode({ data, selected }: NodeProps<AgentN>) {
         <span>{d.label || "Agent"}</span>
       </div>
       <div className="body">
+        <div style={{ fontSize: 10, opacity: 0.6 }}>id: {id}</div>
         <div>{cfg.provider} · {cfg.model}</div>
         <div style={{ marginTop: 4, opacity: 0.8 }}>
           {(cfg.user_prompt || "(no prompt)").slice(0, 80)}

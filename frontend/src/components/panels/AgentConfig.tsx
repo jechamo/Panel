@@ -37,7 +37,17 @@ export default function AgentConfigPanel({ nodeId }: { nodeId: string }) {
       <h2>🤖 Agent</h2>
 
       <div className="field">
-        <label>Name</label>
+        <label style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>Name</span>
+          <button
+            type="button"
+            style={{ padding: "1px 8px", fontSize: 10 }}
+            onClick={() => navigator.clipboard?.writeText(nodeId)}
+            title={`Copy node id: ${nodeId}`}
+          >
+            Copy id ({nodeId})
+          </button>
+        </label>
         <input
           value={node.data.label}
           onChange={(e) => updateData(nodeId, { label: e.target.value })}

@@ -4,6 +4,7 @@ import type { AppNodeData } from "../../store/flow";
 type MicroserviceN = Node<AppNodeData, "microservice">;
 
 export default function MicroserviceNode({
+  id,
   data,
   selected,
 }: NodeProps<MicroserviceN>) {
@@ -17,6 +18,7 @@ export default function MicroserviceNode({
         <span>{d.label || "Microservice"}</span>
       </div>
       <div className="body">
+        <div style={{ fontSize: 10, opacity: 0.6 }}>id: {id}</div>
         <div>{cfg.method}</div>
         <div style={{ marginTop: 4, opacity: 0.8 }}>
           {(cfg.url || "(no url)").slice(0, 60)}
