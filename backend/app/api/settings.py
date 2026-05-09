@@ -64,3 +64,30 @@ def clear_setting(key: str, db: Session = Depends(get_db)):
 def list_providers():
     """What the UI offers in the provider/model dropdowns. Reloads on every call."""
     return load_catalog()
+
+
+@router.get("/copilot-cli-status")
+def copilot_cli_status():
+    """Check whether `gh` is installed and the user is authenticated."""
+    import shutil
+    import subprocess
+
+    if shutil.which("gh") is None:
+        return {"available": False, "reason": "gh CLI not on PATH"}
+    try:
+        result = subprocess.run(
+            ["gh", "auth", "status"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (subprocess.TimeoutExpired, OSError) as e:
+        return {"available": False, "reason": f"could not run gh: {e}"}
+
+    if result.returncode != 0:
+        return {
+            "available": False,
+            "reason": (result.stderr or result.stdout or "not authenticated").strip(),
+        }
+    return {"available": True, "reason": "ok"}
