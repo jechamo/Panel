@@ -1,9 +1,15 @@
+import os
 from pathlib import Path
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+# Tests can override the data dir via PANEL_TEST_DATA_DIR so they don't
+# touch the developer's real panel.db or .master_key.
+_override = os.environ.get("PANEL_TEST_DATA_DIR")
+DATA_DIR = (
+    Path(_override) if _override else Path(__file__).resolve().parent.parent / "data"
+)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 UPLOADS_DIR = DATA_DIR / "uploads"
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
