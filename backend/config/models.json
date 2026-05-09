@@ -1,0 +1,79 @@
+{
+  "providers": {
+    "anthropic": {
+      "label": "Anthropic",
+      "secret_key": "anthropic_api_key",
+      "auth": "api_key",
+      "supports_base_url": false,
+      "structured_output": "tool_use",
+      "default_model": "claude-sonnet-4-6",
+      "models": ["claude-sonnet-4-6", "claude-opus-4-7", "claude-haiku-4-5"]
+    },
+    "openai": {
+      "label": "OpenAI",
+      "secret_key": "openai_api_key",
+      "auth": "api_key",
+      "supports_base_url": true,
+      "structured_output": "json_schema",
+      "default_model": "gpt-4o",
+      "models": ["gpt-4o", "gpt-4o-mini", "o1-mini"]
+    },
+    "azure_openai": {
+      "label": "Azure OpenAI (deployment)",
+      "secret_key": "azure_openai_api_key",
+      "auth": "api_key",
+      "supports_base_url": false,
+      "structured_output": "json_schema",
+      "default_model": "",
+      "models": [],
+      "extra_fields": ["endpoint", "api_version", "deployment"]
+    },
+    "gemini": {
+      "label": "Google Gemini",
+      "secret_key": "gemini_api_key",
+      "auth": "api_key",
+      "supports_base_url": false,
+      "structured_output": "response_schema",
+      "default_model": "gemini-2.0-flash",
+      "models": ["gemini-2.0-flash", "gemini-1.5-pro"]
+    },
+    "github_models": {
+      "label": "GitHub Models (PAT)",
+      "secret_key": "github_token",
+      "auth": "api_key",
+      "supports_base_url": false,
+      "structured_output": "json_schema",
+      "default_model": "openai/gpt-4o-mini",
+      "models": ["openai/gpt-4o", "openai/gpt-4o-mini"]
+    },
+    "copilot_models": {
+      "label": "Copilot CLI (gh auth)",
+      "secret_key": null,
+      "auth": "gh_cli",
+      "supports_base_url": false,
+      "structured_output": "json_schema",
+      "default_model": "openai/gpt-4o-mini",
+      "models": ["openai/gpt-4o", "openai/gpt-4o-mini"]
+    },
+    "cli_subprocess": {
+      "label": "CLI local (Claude / Copilot / ...)",
+      "secret_key": null,
+      "auth": "external",
+      "supports_base_url": false,
+      "structured_output": "prompt",
+      "default_model": "",
+      "models": [],
+      "extra_fields": ["command_template", "timeout_seconds"]
+    },
+    "openai_compat": {
+      "label": "OpenAI-compatible (interno)",
+      "secret_key": "openai_compat_api_key",
+      "auth": "api_key",
+      "supports_base_url": true,
+      "structured_output": "json_schema",
+      "default_model": "",
+      "models": [],
+      "extra_fields": ["base_url"]
+    }
+  }
+}
