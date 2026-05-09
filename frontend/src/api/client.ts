@@ -5,12 +5,17 @@ export type SettingsView = {
   openai_api_key: boolean;
   gemini_api_key: boolean;
   github_token: boolean;
+  present: Record<string, boolean>;
 };
 export type ProviderSpec = {
   label: string;
   default_model: string;
   models: string[];
-  secret_key: string;
+  secret_key: string | null;
+  auth?: string;
+  supports_base_url?: boolean;
+  structured_output?: string;
+  extra_fields?: string[];
 };
 export type RunResult = {
   node_id: string;
@@ -70,6 +75,8 @@ export const api = {
     }).then(j),
   getProviders: (): Promise<Record<string, ProviderSpec>> =>
     fetch("/api/settings/providers").then(j),
+  copilotCliStatus: (): Promise<{ available: boolean; reason: string }> =>
+    fetch("/api/settings/copilot-cli-status").then(j),
 
   uploadFile: async (file: File): Promise<{ name: string; path: string; size: number }> => {
     const fd = new FormData();
